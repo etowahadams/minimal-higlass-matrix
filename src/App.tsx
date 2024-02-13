@@ -1,35 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from "react";
+import "./App.css";
+import { Coordinator } from "./pixi-manager";
+import { generateRandomData } from "./utils";
+
+function avg(arr: number[]) {
+  return arr.reduce((a, b) => a + b) / arr.length;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [fps, setFps] = useState(120);
+  const [minFps, setMinFps] = useState<number>();
+  const lastFiveFps = useRef<number[]>([]);
+
+  useEffect(() => {
+    const data = generateRandomData({
+      count: 4000,
+      maxX: 4000,
+      maxY: 4000,
+      startX: 0,
+      startY: 0,
+      style: "different",
+    });
+    // Create the new plot
+    const plotElement = document.getElementById("plot") as HTMLDivElement;
+    plotElement.innerHTML = "";
+    const newPlot = new Coordinator(500, 500, plotElement, setFps);
+
+    newPlot.addPlot(data, { x: 10, y: 10, width: 480, height: 150 });
+    newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
+  }, []);
+
+  useEffect(() => {
+    lastFiveFps.current.push(fps);
+    // Look at a window of the last 5 fps values
+    if (lastFiveFps.current.length > 5) {
+      lastFiveFps.current.shift();
+    }
+    const avgFps = avg(lastFiveFps.current);
+    if ( (minFps === undefined || avgFps < minFps)) {
+      setMinFps(avgFps);
+    }
+    // This dependency array is not ideal since fps will get added to recordedFps.current a few extra times
+    // Minimal impact on accuracy though
+  }, [fps, minFps]);
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+      <h1>Minimal HiGlass Matrix</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <h2>Performance</h2>
+        <div className="desc">
+          Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
+          {lastFiveFps.current.length > 0 &&
+            Math.min(...lastFiveFps.current).toFixed(0)}
+        </div>
+        <div className="card" id="plot"></div>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

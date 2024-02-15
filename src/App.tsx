@@ -27,7 +27,10 @@ function App() {
     const newPlot = new Coordinator(500, 500, plotElement, setFps);
 
     newPlot.addPlot(data, { x: 10, y: 10, width: 480, height: 150 });
-    newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
+    // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
+    newPlot.addPixiPlot({ x: 10, y: 170, width: 200, height: 200 });
+
+    newPlot.addPixiPlot({ x: 240, y: 170, width: 200, height: 200 });
   }, []);
 
   useEffect(() => {
@@ -37,21 +40,19 @@ function App() {
       lastFiveFps.current.shift();
     }
     const avgFps = avg(lastFiveFps.current);
-    if ( (minFps === undefined || avgFps < minFps)) {
+    if (minFps === undefined || avgFps < minFps) {
       setMinFps(avgFps);
     }
     // This dependency array is not ideal since fps will get added to recordedFps.current a few extra times
     // Minimal impact on accuracy though
   }, [fps, minFps]);
 
-
   return (
     <>
       <h1>Minimal HiGlass Matrix</h1>
       <div className="card">
-        <h2>Performance</h2>
         <div className="desc">
-          Lowest FPS: <b>{minFps ? minFps.toFixed(0) : "..."}</b>, Current FPS:{" "}
+          Current FPS:
           {lastFiveFps.current.length > 0 &&
             Math.min(...lastFiveFps.current).toFixed(0)}
         </div>

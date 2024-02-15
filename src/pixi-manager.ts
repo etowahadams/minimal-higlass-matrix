@@ -1,9 +1,11 @@
 import * as PIXI from "pixi.js";
-import { PlotClient } from './plot-client';
+import { PlotClient } from "./plot-client";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
 import { Data } from "./utils";
-
+import { PixiClient } from "./pixi-client";
+import { TiledPixiClient } from "./tiled-pixi-client";
+import { HeatmapClient } from "./heatmap-client";
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
@@ -15,18 +17,21 @@ function wheelDelta(event: WheelEvent) {
   );
 }
 
-function createOverlayElement(
-  position: {x: number, y: number, width: number, height: number}
-): HTMLDivElement {
+function createOverlayElement(position: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): HTMLDivElement {
   const overlay = document.createElement("div");
-  
+
   overlay.style.position = "absolute";
   overlay.style.left = `${position.x}px`;
   overlay.style.top = `${position.y}px`;
   overlay.style.width = `${position.width}px`;
   overlay.style.height = `${position.height}px`;
   overlay.id = `overlay-${Math.random().toString(36).substring(7)}`; // Add random id
-  
+
   return overlay;
 }
 
@@ -58,19 +63,41 @@ export class Coordinator {
 
   public addPlot(
     data: Data[],
-    position: {x: number, y: number, width: number, height: number}
+    position: { x: number; y: number; width: number; height: number }
   ): void {
     const plotDiv = createOverlayElement(position);
     this.container.appendChild(plotDiv);
-    const {width, height} = position
+    const { width, height } = position;
 
     const plotGraphics = new PIXI.Graphics();
     plotGraphics.position.set(position.x, position.y);
     this.app.stage.addChild(plotGraphics);
 
     this.plots.push(
-      new PlotClient(data, {width, height}, plotGraphics, plotDiv, this.app.renderer)
+      new PlotClient(
+        data,
+        { width, height },
+        plotGraphics,
+        plotDiv,
+        this.app.renderer
+      )
     );
+  }
+
+  public addPixiPlot(position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): void {
+
+    const plotDiv = createOverlayElement(position);
+    this.container.appendChild(plotDiv);
+
+    const container = new PIXI.Container();
+    this.app.stage.addChild(container);
+
+    new HeatmapClient(container, plotDiv, position, {trackBorderWidth: 1, trackBorderColor: "blue"});
   }
 
   public zoomed(event: D3ZoomEvent<HTMLElement, unknown>) {

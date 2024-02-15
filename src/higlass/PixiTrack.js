@@ -1,16 +1,15 @@
 import { formatPrefix, precisionPrefix } from 'd3-format';
-import slugid from 'slugid';
 
 import Track from './Track';
 
-import { colorToHex } from './utils';
+import { colorToHex, uuid } from './utils';
 
 // Configs
 import { GLOBALS } from './configs';
 import {
   isResolutionsTilesetInfo,
   isLegacyTilesetInfo,
-} from './utils/type-guards';
+} from './type-guards';
 
 /**
  * Format a resolution relative to the highest possible resolution.
@@ -124,7 +123,7 @@ function getWidthBasedResolutionText(
 /**
  * @template {ExtendedPixiOptions<{[key: string]: any}>} Options
  * @extends {Track<Options>} */
-class PixiTrack extends Track {
+export class PixiTrack extends Track {
   /**
    * @param {PixiTrackContext} context - Includes the PIXI.js scene to draw to.
    * @param {Options} options - The options for this track.
@@ -728,7 +727,7 @@ class PixiTrack extends Track {
     );
 
     // the clipping area needs to be a clipPath element
-    const clipPathId = slugid.nice();
+    const clipPathId = uuid();
     clipPath.setAttribute('id', clipPathId);
 
     gClipped.setAttribute('style', `clip-path:url(#${clipPathId});`);

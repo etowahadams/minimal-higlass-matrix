@@ -1,19 +1,16 @@
-// @ts-check
-
 import { scaleLinear, scaleLog, scaleQuantile } from 'd3-scale';
 import { median, range, ticks } from 'd3-array';
-import slugid from 'slugid';
 
-import { DataFetcher } from './data-fetchers';
+import DataFetcher from './datafetcher/DataFetcher';
 import PixiTrack from './PixiTrack';
 
 // Utils
-import { throttleAndDebounce, parseChromsizesRows } from './utils';
-import backgroundTaskScheduler from './utils/background-task-scheduler';
+import { throttleAndDebounce, parseChromsizesRows, uuid } from './utils';
+import backgroundTaskScheduler from './background-task-scheduler';
 
 // Configs
 import { GLOBALS, ZOOM_DEBOUNCE } from './configs';
-import { isResolutionsTilesetInfo, isTileSetInfo } from './utils/type-guards';
+import { isResolutionsTilesetInfo, isTileSetInfo } from './type-guards';
 
 /**
  * Get a valueScale for a heatmap.
@@ -130,7 +127,7 @@ export function getValueScale(
  * @template {ExtendedTiledPixiTrackOptions<{[key: string]: any}>} Options
  * @extends {PixiTrack<Options>}
  * */
-class TiledPixiTrack extends PixiTrack {
+export class TiledPixiTrack extends PixiTrack {
   /**
    *
    * @param {TiledPixiTrackContext} context
@@ -214,7 +211,7 @@ class TiledPixiTrack extends PixiTrack {
     /** @type {TilesetInfo} */
     // @ts-expect-error This has to be initialized to null
     this.tilesetInfo = null;
-    this.uuid = slugid.nice();
+    this.uuid = uuid();
 
     // this needs to be above the tilesetInfo() call because if that
     // executes first, the call to draw() will complain that this text

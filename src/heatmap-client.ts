@@ -6,6 +6,7 @@ import {
 import * as PIXI from "pixi.js";
 import { fakePubSub } from "./higlass/utils";
 import { scaleLinear } from "d3-scale";
+import { createOverlayElement } from "./pixi-manager";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
@@ -19,43 +20,49 @@ type HeatmapTrackContext = TiledPixiTrackContext & {
 };
 
 type HeatmapTrackOptions = TiledPixiTrackOptions & {
-    dataTransform?: unknown;
-    extent?: string;
-    reverseYAxis?: boolean;
-    showTooltip?: boolean;
-    heatmapValueScaling?: string;
-    colorRange?: unknown;
-    showMousePosition?: boolean;
-    scaleStartPercent?: unknown;
-    scaleEndPercent?: unknown;
-    labelPosition?: unknown;
-    colorbarPosition?: unknown;
-    colorbarBackgroundColor?: string;
-    colorbarBackgroundOpacity?: number;
-    zeroValueColor?: string;
-    selectRowsAggregationMode?: string;
-    selectRowsAggregationWithRelativeHeight?: unknown;
-    selectRowsAggregationMethod?: unknown;
+  dataTransform?: unknown;
+  extent?: string;
+  reverseYAxis?: boolean;
+  showTooltip?: boolean;
+  heatmapValueScaling?: string;
+  colorRange?: unknown;
+  showMousePosition?: boolean;
+  scaleStartPercent?: unknown;
+  scaleEndPercent?: unknown;
+  labelPosition?: unknown;
+  colorbarPosition?: string;
+  colorbarBackgroundColor?: string;
+  colorbarBackgroundOpacity?: number;
+  zeroValueColor?: string;
+  selectRowsAggregationMode?: string;
+  selectRowsAggregationWithRelativeHeight?: unknown;
+  selectRowsAggregationMethod?: unknown;
 };
 
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
-    const defaultMultiplier = 5;
-    return (
-      -event.deltaY *
-      (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-      (event.ctrlKey ? 10 : defaultMultiplier)
-    );
-  }
+  const defaultMultiplier = 5;
+  return (
+    -event.deltaY *
+    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
+    (event.ctrlKey ? 10 : defaultMultiplier)
+  );
+}
 
 export class HeatmapClient extends HeatmapTiledPixiTrack {
+    containerElement: HTMLElement;
   constructor(
     scene: PIXI.Container,
-    element: HTMLElement,
+    containerElement: HTMLElement,
     size: { width: number; height: number; x: number; y: number },
     options: HeatmapTrackOptions
   ) {
+    const plotDiv = createOverlayElement(size);
+    containerElement.appendChild(plotDiv);
+    const colorbarDiv = document.createElement("svg");
+    plotDiv.appendChild(colorbarDiv);
+    
     const context: HeatmapTrackContext = {
       scene,
       id: "test",
@@ -67,17 +74,22 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
       animate: () => {},
       onValueScaleChanged: () => {},
       handleTilesetInfoReceived: (tilesetInfo: any) => {},
+      onTrackOptionsChanged: () => {},
       pubSub: fakePubSub,
       isValueScaleLocked: () => false,
-      svgElement: document.createElement("div"),
+      svgElement: colorbarDiv,
     };
 
     super(context, options);
 
     this.setDimensions([size.width, size.height]);
     this.setPosition([size.x, size.y]);
-    const refXScale = scaleLinear().domain([0, 3088269832]).range([0, size.width]);
-    const refYScale = scaleLinear().domain([0, 3088269832]).range([0, size.height]);
+    const refXScale = scaleLinear()
+      .domain([0, 3088269832])
+      .range([0, size.width]);
+    const refYScale = scaleLinear()
+      .domain([0, 3088269832])
+      .range([0, size.height]);
     this.zoomed(refXScale, refYScale, 1, size.x, size.y);
     this.refScalesChanged(refXScale, refYScale);
 
@@ -85,7 +97,7 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
     const zoomBehavior = zoom<HTMLElement, unknown>()
       .wheelDelta(wheelDelta)
       .on("zoom", this.handleZoom.bind(this));
-    select<HTMLElement, unknown>(element).call(zoomBehavior);
+    select<HTMLElement, unknown>(plotDiv).call(zoomBehavior);
   }
 
   handleZoom(event: D3ZoomEvent<HTMLElement, unknown>): void {
@@ -94,6 +106,12 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
     const transform = event.transform;
     const newXScale = transform.rescaleX(this._refXScale);
     const newYScale = transform.rescaleY(this._refYScale);
-    this.zoomed(newXScale, newYScale, transform.k, transform.x + this.position[0], transform.y + this.position[1]);
+    this.zoomed(
+      newXScale,
+      newYScale,
+      transform.k,
+      transform.x + this.position[0],
+      transform.y + this.position[1]
+    );
   }
 }

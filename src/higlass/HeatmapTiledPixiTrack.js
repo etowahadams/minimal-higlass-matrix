@@ -1494,8 +1494,6 @@ export class HeatmapTiledPixiTrack extends TiledPixiTrack {
 
     super.zoomed(newXScale, newYScale);
 
-    console.warn("zoomed called", newXScale.domain(), newXScale.range());
-
     this.pMain.position.x = tx; // translateX;
     this.pMain.position.y = ty; // translateY;
 

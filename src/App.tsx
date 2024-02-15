@@ -17,20 +17,20 @@ function App() {
       count: 4000,
       maxX: 4000,
       maxY: 4000,
-      startX: 0,
-      startY: 0,
+      startX: -2000,
+      startY: -2000,
       style: "different",
     });
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    const newPlot = new Coordinator(500, 500, plotElement, setFps);
+    const newPlot = new Coordinator(1000, 1000, plotElement, setFps);
 
-    newPlot.addPlot(data, { x: 10, y: 10, width: 480, height: 150 });
+    newPlot.addPlot(data, { x: 10, y: 10, width: 600, height: 300 });
     // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
-    newPlot.addPixiPlot({ x: 10, y: 170, width: 200, height: 200 });
+    newPlot.addPixiPlot({ x: 10, y: 350, width: 400, height: 400 });
 
-    newPlot.addPixiPlot({ x: 240, y: 170, width: 200, height: 200 });
+    newPlot.addPixiPlot({ x: 420, y: 350, width: 500, height: 500 });
   }, []);
 
   useEffect(() => {

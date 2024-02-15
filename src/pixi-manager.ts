@@ -17,7 +17,7 @@ function wheelDelta(event: WheelEvent) {
   );
 }
 
-function createOverlayElement(position: {
+export function createOverlayElement(position: {
   x: number;
   y: number;
   width: number;
@@ -38,7 +38,7 @@ function createOverlayElement(position: {
 export class Coordinator {
   private app: PIXI.Application<HTMLCanvasElement>;
   private plots: PlotClient[] = [];
-  private container: HTMLDivElement;
+  private containerElement: HTMLDivElement;
 
   constructor(
     width: number,
@@ -53,7 +53,7 @@ export class Coordinator {
       view: document.createElement("canvas"),
       backgroundColor: 0xffffff,
     });
-    this.container = container;
+    this.containerElement = container;
     container.appendChild(this.app.view);
 
     this.app.ticker.add(() => {
@@ -66,7 +66,7 @@ export class Coordinator {
     position: { x: number; y: number; width: number; height: number }
   ): void {
     const plotDiv = createOverlayElement(position);
-    this.container.appendChild(plotDiv);
+    this.containerElement.appendChild(plotDiv);
     const { width, height } = position;
 
     const plotGraphics = new PIXI.Graphics();
@@ -91,13 +91,14 @@ export class Coordinator {
     height: number;
   }): void {
 
-    const plotDiv = createOverlayElement(position);
-    this.container.appendChild(plotDiv);
+    const pContainer = new PIXI.Container();
+    this.app.stage.addChild(pContainer);
 
-    const container = new PIXI.Container();
-    this.app.stage.addChild(container);
-
-    new HeatmapClient(container, plotDiv, position, {trackBorderWidth: 1, trackBorderColor: "blue"});
+    new HeatmapClient(pContainer, this.containerElement, position, {
+      trackBorderWidth: 1,
+      trackBorderColor: "black",
+      colorbarPosition: "topRight",
+    });
   }
 
   public zoomed(event: D3ZoomEvent<HTMLElement, unknown>) {

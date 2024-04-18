@@ -5,7 +5,6 @@ import {
   zoom,
   zoomIdentity,
   ZoomTransform,
-  zoomTransform,
 } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect } from "@preact/signals-core";

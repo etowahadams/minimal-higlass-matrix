@@ -4,12 +4,28 @@ import { Coordinator } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
+import stats from "stats.js";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
 
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
+}
+
+function FpsPanel({ fps, style }: { fps: number, style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<InstanceType<typeof stats.Panel>>();
+  useEffect(() => {
+    panelRef.current = new stats.Panel("FPS", "#0ff", "#002");
+    ref.current!.innerHTML = "";
+    ref.current!.appendChild(panelRef.current!.dom);
+  }, []);
+  useEffect(() => {
+    if (!panelRef.current) return;
+    panelRef.current.update(fps, 100);
+  }, [fps]);
+  return <div style={style} ref={ref}></div>;
 }
 
 function App() {
@@ -56,6 +72,7 @@ function App() {
   return (
     <>
       <h1>Minimal HiGlass Matrix</h1>
+      <FpsPanel fps={fps} style={{ position: "absolute", left: 0, top: 0 }} />
       <div className="card">
         <div className="desc">
           Current FPS:

@@ -3,9 +3,12 @@ import { PlotClient } from "./plot-client";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
 import { Data } from "./utils";
-import { PixiClient } from "./pixi-client";
-import { TiledPixiClient } from "./tiled-pixi-client";
+// import { PixiClient } from "./pixi-client";
+// import { TiledPixiClient } from "./tiled-pixi-client";
 import { HeatmapClient } from "./heatmap-client";
+import { type Signal } from "@preact/signals-core";
+import { ScaleLinear } from "d3-scale";
+
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
@@ -63,7 +66,9 @@ export class Coordinator {
 
   public addPlot(
     data: Data[],
-    position: { x: number; y: number; width: number; height: number }
+    position: { x: number; y: number; width: number; height: number },
+    xSignal: Signal<ScaleLinear<number, number>>,
+    ySignal: Signal<ScaleLinear<number, number>>
   ): void {
     const plotDiv = createOverlayElement(position);
     this.containerElement.appendChild(plotDiv);
@@ -79,7 +84,9 @@ export class Coordinator {
         { width, height },
         plotGraphics,
         plotDiv,
-        this.app.renderer
+        this.app.renderer,
+        xSignal,
+        ySignal
       )
     );
   }

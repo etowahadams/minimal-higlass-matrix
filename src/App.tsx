@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { Coordinator } from "./pixi-manager";
 import { generateRandomData } from "./utils";
+import { signal } from "@preact/signals-core";
+import { ScaleLinear, scaleLinear } from "d3-scale";
+
+const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
+const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
 
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
@@ -26,7 +31,8 @@ function App() {
     plotElement.innerHTML = "";
     const newPlot = new Coordinator(1000, 1000, plotElement, setFps);
 
-    newPlot.addPlot(data, { x: 10, y: 10, width: 600, height: 300 });
+    newPlot.addPlot(data, { x: 10, y: 10, width: 300, height: 300 }, xSignal, ySignal);
+    newPlot.addPlot(data, { x: 400, y: 10, width: 300, height: 300 }, xSignal, ySignal);
     // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
     newPlot.addPixiPlot({ x: 10, y: 350, width: 400, height: 400 });
 

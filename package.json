@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@preact/signals-core": "^1.5.1",
     "d3-array": "^3.2.4",
     "d3-brush": "^3.0.0",
     "d3-color": "^3.1.0",
@@ -18,7 +19,6 @@
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.1",
     "d3-zoom": "^3.0.0",
-    "higlass": "^1.13.4",
     "ndarray": "^1.0.19",
     "pixi.js": "^7.4.0",
     "pub-sub-es": "^2.1.1",

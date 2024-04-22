@@ -55,6 +55,13 @@ export class Coordinator {
       antialias: true,
       view: document.createElement("canvas"),
       backgroundColor: 0xffffff,
+      eventMode: "static",
+      eventFeatures: {
+        move: false,
+        globalMove: false,
+        click: true,
+        wheel: false
+      },
     });
     this.containerElement = container;
     container.appendChild(this.app.view);
@@ -97,7 +104,6 @@ export class Coordinator {
     width: number;
     height: number;
   }): void {
-
     const pContainer = new PIXI.Container();
     this.app.stage.addChild(pContainer);
 

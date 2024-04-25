@@ -51,18 +51,20 @@ function wheelDelta(event: WheelEvent) {
 }
 
 export class HeatmapClient extends HeatmapTiledPixiTrack {
-    containerElement: HTMLElement;
   constructor(
     scene: PIXI.Container,
     containerElement: HTMLElement,
     size: { width: number; height: number; x: number; y: number },
     options: HeatmapTrackOptions
   ) {
+    // D3 zoom will be hooked up to this
     const plotDiv = createOverlayElement(size);
     containerElement.appendChild(plotDiv);
+    // The colorbar svg element isn't quite working yet
     const colorbarDiv = document.createElement("svg");
     plotDiv.appendChild(colorbarDiv);
     
+    // Setup the context object
     const context: HeatmapTrackContext = {
       scene,
       id: "test",
@@ -82,6 +84,7 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
 
     super(context, options);
 
+    // Now we need to initialize all of the properties that would normally be set by HiGlassComponent
     this.setDimensions([size.width, size.height]);
     this.setPosition([size.x, size.y]);
     const refXScale = scaleLinear()
@@ -100,9 +103,10 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
     select<HTMLElement, unknown>(plotDiv).call(zoomBehavior);
   }
 
+  /**
+   * This function is called when the user zooms in or out.
+   */
   handleZoom(event: D3ZoomEvent<HTMLElement, unknown>): void {
-    // const transform = event.transform;
-    // this.zoomed(this._refXScale, this._refYScale, transform.k, transform.x + this.position[0], transform.y + this.position[1]);
     const transform = event.transform;
     const newXScale = transform.rescaleX(this._refXScale);
     const newYScale = transform.rescaleY(this._refYScale);

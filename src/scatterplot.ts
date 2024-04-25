@@ -49,7 +49,7 @@ function wheelDelta(event: WheelEvent) {
   );
 }
 
-export class PlotClient {
+export class Scatterplot {
   private pMain: PIXI.Graphics;
   private pBorder: PIXI.Graphics;
   private data: Data[] = [];

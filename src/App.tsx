@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { Coordinator } from "./pixi-manager";
+import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
@@ -29,20 +29,13 @@ function App() {
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    const newPlot = new Coordinator(1000, 1000, plotElement, setFps);
+    
+    const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
 
-    newPlot.addPlot(data, { x: 10, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 220, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 430, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 640, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 10, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 220, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 430, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 640, y: 250, width: 200, height: 200 }, xSignal, ySignal);
+    pixiManager.addScatterplot(data, { x: 10, y: 10, width: 300, height: 300 }, xSignal, ySignal);
 
-    // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
-    // newPlot.addPixiPlot({ x: 10, y: 350, width: 400, height: 400 });
-    // newPlot.addPixiPlot({ x: 420, y: 350, width: 500, height: 500 });
+    pixiManager.addHeatmap({ x: 10, y: 350, width: 400, height: 400 });
+    pixiManager.addHeatmap({ x: 420, y: 350, width: 500, height: 500 });
   }, []);
 
   useEffect(() => {

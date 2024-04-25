@@ -1,11 +1,11 @@
 import * as PIXI from "pixi.js";
-import { PlotClient } from "./plot-client";
+import { Scatterplot } from "./scatterplot";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
 import { Data } from "./utils";
 // import { PixiClient } from "./pixi-client";
 // import { TiledPixiClient } from "./tiled-pixi-client";
-import { HeatmapClient } from "./heatmap-client";
+import { HeatmapClient } from "./heatmap";
 import { type Signal } from "@preact/signals-core";
 import { ScaleLinear } from "d3-scale";
 
@@ -38,9 +38,9 @@ export function createOverlayElement(position: {
   return overlay;
 }
 
-export class Coordinator {
+export class PixiManager {
   private app: PIXI.Application<HTMLCanvasElement>;
-  private plots: PlotClient[] = [];
+  private plots: Scatterplot[] = [];
   private containerElement: HTMLDivElement;
 
   constructor(
@@ -71,7 +71,7 @@ export class Coordinator {
     });
   }
 
-  public addPlot(
+  public addScatterplot(
     data: Data[],
     position: { x: number; y: number; width: number; height: number },
     xSignal: Signal<ScaleLinear<number, number>>,
@@ -86,7 +86,7 @@ export class Coordinator {
     this.app.stage.addChild(plotGraphics);
 
     this.plots.push(
-      new PlotClient(
+      new Scatterplot(
         data,
         { width, height },
         plotGraphics,
@@ -98,7 +98,7 @@ export class Coordinator {
     );
   }
 
-  public addPixiPlot(position: {
+  public addHeatmap(position: {
     x: number;
     y: number;
     width: number;

@@ -74,7 +74,7 @@ function App() {
 
   return (
     <>
-      <h1>Minimal HiGlass Matrix</h1>
+      <h1>HiGlass tracks using new renderer</h1>
       <div className="card">
         <div className="desc">
           Current FPS:
@@ -83,9 +83,6 @@ function App() {
         </div>
         <div className="card" id="plot"></div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

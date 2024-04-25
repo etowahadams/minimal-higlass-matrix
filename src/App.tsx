@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { Coordinator } from "./pixi-manager";
+import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
+import { Scatterplot } from "./scatterplot";
+import { HeatmapClient } from "./heatmap";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
@@ -29,20 +31,31 @@ function App() {
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    const newPlot = new Coordinator(1000, 1000, plotElement, setFps);
 
-    newPlot.addPlot(data, { x: 10, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 220, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 430, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 640, y: 10, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 10, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 220, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 430, y: 250, width: 200, height: 200 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 640, y: 250, width: 200, height: 200 }, xSignal, ySignal);
+    // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
+    const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
+    
+    // Let's make a scatterplot 
+    const position = { x: 10, y: 10, width: 300, height: 300 };
+    const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
+    new Scatterplot(
+      data,
+      pixiContainer,
+      overlayDiv,
+      pixiManager.app.renderer,
+      xSignal,
+      ySignal
+    )
 
-    // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
-    // newPlot.addPixiPlot({ x: 10, y: 350, width: 400, height: 400 });
-    // newPlot.addPixiPlot({ x: 420, y: 350, width: 500, height: 500 });
+    // Let's add a heatmap
+    const heatmapPosition = { x: 10, y: 350, width: 400, height: 400 };
+    const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
+    new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
+      trackBorderWidth: 1,
+      trackBorderColor: "black",
+      colorbarPosition: "topRight",
+    });
+
   }, []);
 
   useEffect(() => {
@@ -61,7 +74,7 @@ function App() {
 
   return (
     <>
-      <h1>Minimal HiGlass Matrix</h1>
+      <h1>HiGlass tracks using new renderer</h1>
       <div className="card">
         <div className="desc">
           Current FPS:
@@ -70,9 +83,6 @@ function App() {
         </div>
         <div className="card" id="plot"></div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

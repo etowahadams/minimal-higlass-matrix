@@ -4,6 +4,8 @@ import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
+import { Scatterplot } from "./scatterplot";
+import { HeatmapClient } from "./heatmap";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
@@ -29,13 +31,31 @@ function App() {
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    
+
+    // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
+    
+    // Let's make a scatterplot 
+    const position = { x: 10, y: 10, width: 300, height: 300 };
+    const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
+    new Scatterplot(
+      data,
+      pixiContainer,
+      overlayDiv,
+      pixiManager.app.renderer,
+      xSignal,
+      ySignal
+    )
 
-    pixiManager.addScatterplot(data, { x: 10, y: 10, width: 300, height: 300 }, xSignal, ySignal);
+    // Let's add a heatmap
+    const heatmapPosition = { x: 10, y: 350, width: 400, height: 400 };
+    const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
+    new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
+      trackBorderWidth: 1,
+      trackBorderColor: "black",
+      colorbarPosition: "topRight",
+    });
 
-    pixiManager.addHeatmap({ x: 10, y: 350, width: 400, height: 400 });
-    pixiManager.addHeatmap({ x: 420, y: 350, width: 500, height: 500 });
   }, []);
 
   useEffect(() => {

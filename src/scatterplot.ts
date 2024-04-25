@@ -65,15 +65,14 @@ export class Scatterplot {
 
   constructor(
     data: Data[],
-    size: { width: number; height: number },
-    pGraphics: PIXI.Graphics,
-    element: HTMLElement,
+    pContainer: PIXI.Container,
+    overlayDiv: HTMLElement,
     renderer: PIXI.IRenderer<HTMLCanvasElement>,
     xSignal: Signal<ScaleLinear<number, number>>,
     ySignal: Signal<ScaleLinear<number, number>>
   ) {
-    this.width = size.width;
-    this.height = size.height;
+    this.width = overlayDiv.clientWidth;
+    this.height = overlayDiv.clientHeight;
     this.xSignal = xSignal;
     this.ySignal = ySignal;
 
@@ -91,7 +90,7 @@ export class Scatterplot {
     this.pBorder = new PIXI.Graphics();
     maskContainer.addChild(this.pMain);
     maskContainer.addChild(this.pBorder);
-    pGraphics.addChild(maskContainer);
+    pContainer.addChild(maskContainer);
 
     this.drawBorder();
 
@@ -101,7 +100,7 @@ export class Scatterplot {
     const zoomBehavior = zoom<HTMLElement, unknown>()
       .wheelDelta(wheelDelta)
       .on("zoom", this.zoomed.bind(this));
-    select<HTMLElement, unknown>(element).call(zoomBehavior);
+    select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
 
     this.data = data; // You can specify the number of points you want
     this.createCircles();

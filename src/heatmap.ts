@@ -6,7 +6,6 @@ import {
 import * as PIXI from "pixi.js";
 import { fakePubSub } from "./higlass/utils";
 import { scaleLinear } from "d3-scale";
-import { createOverlayElement } from "./pixi-manager";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
@@ -52,21 +51,20 @@ function wheelDelta(event: WheelEvent) {
 
 export class HeatmapClient extends HeatmapTiledPixiTrack {
   constructor(
-    scene: PIXI.Container,
-    containerElement: HTMLElement,
-    size: { width: number; height: number; x: number; y: number },
+    pixiContainer: PIXI.Container,
+    overlayDiv: HTMLElement,
     options: HeatmapTrackOptions
   ) {
-    // D3 zoom will be hooked up to this
-    const plotDiv = createOverlayElement(size);
-    containerElement.appendChild(plotDiv);
+    //
+    const height = overlayDiv.clientHeight;
+    const width = overlayDiv.clientWidth;
     // The colorbar svg element isn't quite working yet
     const colorbarDiv = document.createElement("svg");
-    plotDiv.appendChild(colorbarDiv);
+    overlayDiv.appendChild(colorbarDiv);
     
     // Setup the context object
     const context: HeatmapTrackContext = {
-      scene,
+      scene: pixiContainer,
       id: "test",
       dataConfig: {
         server: "http://higlass.io/api/v1",
@@ -85,22 +83,24 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
     super(context, options);
 
     // Now we need to initialize all of the properties that would normally be set by HiGlassComponent
-    this.setDimensions([size.width, size.height]);
-    this.setPosition([size.x, size.y]);
+    this.setDimensions([width, height]);
+    this.setPosition([0, 0]);
+    // Create some scales which span the whole genome
     const refXScale = scaleLinear()
       .domain([0, 3088269832])
-      .range([0, size.width]);
+      .range([0, width]);
     const refYScale = scaleLinear()
       .domain([0, 3088269832])
-      .range([0, size.height]);
-    this.zoomed(refXScale, refYScale, 1, size.x, size.y);
+      .range([0, height]);
+    // Set the scales
+    this.zoomed(refXScale, refYScale, 1, 0, 0);
     this.refScalesChanged(refXScale, refYScale);
 
     // Attach zoom behavior to the canvas.
     const zoomBehavior = zoom<HTMLElement, unknown>()
       .wheelDelta(wheelDelta)
       .on("zoom", this.handleZoom.bind(this));
-    select<HTMLElement, unknown>(plotDiv).call(zoomBehavior);
+    select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
   }
 
   /**

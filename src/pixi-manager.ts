@@ -39,7 +39,7 @@ export function createOverlayElement(position: {
 }
 
 export class PixiManager {
-  private app: PIXI.Application<HTMLCanvasElement>;
+  app: PIXI.Application<HTMLCanvasElement>;
   private plots: Scatterplot[] = [];
   private containerElement: HTMLDivElement;
 
@@ -60,7 +60,7 @@ export class PixiManager {
         move: false,
         globalMove: false,
         click: true,
-        wheel: false
+        wheel: false,
       },
     });
     this.containerElement = container;
@@ -71,31 +71,20 @@ export class PixiManager {
     });
   }
 
-  public addScatterplot(
-    data: Data[],
-    position: { x: number; y: number; width: number; height: number },
-    xSignal: Signal<ScaleLinear<number, number>>,
-    ySignal: Signal<ScaleLinear<number, number>>
-  ): void {
+  getContainer(position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): { pixiContainer: PIXI.Container; overlayDiv: HTMLDivElement } {
+    const pContainer = new PIXI.Container();
+    pContainer.position.set(position.x, position.y);
+    this.app.stage.addChild(pContainer);
+
     const plotDiv = createOverlayElement(position);
     this.containerElement.appendChild(plotDiv);
-    const { width, height } = position;
 
-    const plotGraphics = new PIXI.Graphics();
-    plotGraphics.position.set(position.x, position.y);
-    this.app.stage.addChild(plotGraphics);
-
-    this.plots.push(
-      new Scatterplot(
-        data,
-        { width, height },
-        plotGraphics,
-        plotDiv,
-        this.app.renderer,
-        xSignal,
-        ySignal
-      )
-    );
+    return { pixiContainer: pContainer, overlayDiv: plotDiv };
   }
 
   public addHeatmap(position: {
@@ -111,30 +100,6 @@ export class PixiManager {
       trackBorderWidth: 1,
       trackBorderColor: "black",
       colorbarPosition: "topRight",
-    });
-  }
-
-  public zoomed(event: D3ZoomEvent<HTMLElement, unknown>) {
-    this.plots.forEach((plot) => plot.zoomed(event));
-  }
-
-  public scaleTo(scale: number, duration?: number): Promise<void> {
-    const zoomTime = duration || 1500;
-    const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
-      .wheelDelta(wheelDelta)
-      .on("zoom", this.zoomed.bind(this));
-
-    const canvasElement = this.app.view;
-
-    select<HTMLCanvasElement, unknown>(canvasElement)
-      .transition()
-      .duration(zoomTime)
-      .call(zoomBehavior.scaleTo, scale);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, zoomTime);
     });
   }
 

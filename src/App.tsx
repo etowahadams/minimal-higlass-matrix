@@ -332,22 +332,50 @@ function App() {
     );
 
     // Let's add a heatmap
-    const heatmapPosition = { x: 350, y: 30, width: 400, height: 400 };
-    const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
-    new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
-      trackBorderWidth: 1,
-      trackBorderColor: "black",
-      colorbarPosition: "topRight",
-    });
+    // const heatmapPosition = { x: 350, y: 30, width: 400, height: 400 };
+    // const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
+    // new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
+    //   trackBorderWidth: 1,
+    //   trackBorderColor: "black",
+    //   colorbarPosition: "topRight",
+    // });
 
-    const gosPosition = { x: 10, y: 500, width: 800, height: 200 };
-    const { pixiContainer: gosContainer, overlayDiv: gosDiv } =
-      pixiManager.getContainer(gosPosition);
-    new GoslingTrack(gosContainer, gosDiv, gosOptions);
+    const genomeScale = scaleLinear().domain([0, 3088269832]).range([0, 800]);
+    const xScaleSignal = signal<ScaleLinear<number, number>>(genomeScale);
 
-    const { pixiContainer: gc2, overlayDiv: gd2 } =
-      pixiManager.getContainer({ x: 10, y: 720, width: 800, height: 200 });
-    new GoslingTrack(gc2, gd2, gosOptions);
+    const pos = { x: 10, y: 500, width: 800, height: 50 };
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos));
+
+    const pos2 = {...pos,  y: pos.y + 50};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos2));
+
+    const pos3 = {...pos,  y: pos.y + 100};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos3));
+
+    const pos4 = {...pos,  y: pos.y + 150};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos4));
+
+    const pos5 = {...pos,  y: pos.y + 200};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos5));
+
+    const pos6 = {...pos,  y: pos.y + 250};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos6));
+
+    const pos7 = {...pos,  y: pos.y + 300};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos7));
+
+    const pos8 = {...pos,  y: pos.y + 350};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos8));
+
+    const pos9 = {...pos,  y: pos.y + 400};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos9));
+
+    const pos10 = {...pos,  y: pos.y + 450};
+    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos10));
+
+    // const { pixiContainer: gc2, overlayDiv: gd2 } =
+    //   pixiManager.getContainer({ x: 10, y: 720, width: 800, height: 200 });
+    // new GoslingTrack(gc2, gd2, gosOptions);
   }, []);
 
   useEffect(() => {

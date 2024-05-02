@@ -3,13 +3,14 @@ import {
   GoslingTrackOptions,
   GoslingTrackContext,
 } from "./gosling/gosling-track";
-import { TiledPixiTrackContext, TiledPixiTrackOptions } from "./higlass/types";
 import * as PIXI from "pixi.js";
 import { fakePubSub } from "./higlass/utils";
 import { scaleLinear } from "d3-scale";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
+import { type ScaleLinear } from "d3-scale";
+import { type Signal, effect } from "@preact/signals-core";
 
 // type HeatmapTrackContext = TiledPixiTrackContext & {
 //   svgElement: HTMLElement;
@@ -31,11 +32,17 @@ function wheelDelta(event: WheelEvent) {
 }
 
 export class GoslingTrack extends GoslingTrackClass {
+  xSignal: Signal<ScaleLinear<number, number>>;
+
   constructor(
-    pixiContainer: PIXI.Container,
-    overlayDiv: HTMLElement,
-    options: GoslingTrackOptions
+    options: GoslingTrackOptions,
+    xSignal: Signal<ScaleLinear<number, number>>,
+    containers: {
+      pixiContainer: PIXI.Container;
+      overlayDiv: HTMLElement;
+    }
   ) {
+    const { pixiContainer, overlayDiv } = containers;
     const height = overlayDiv.clientHeight;
     const width = overlayDiv.clientWidth;
     // The colorbar svg element isn't quite working yet
@@ -62,6 +69,7 @@ export class GoslingTrack extends GoslingTrackClass {
 
     super(context, options);
 
+    this.xSignal = xSignal;
     // Now we need to initialize all of the properties that would normally be set by HiGlassComponent
     this.setDimensions([width, height]);
     this.setPosition([0, 0]);
@@ -77,6 +85,10 @@ export class GoslingTrack extends GoslingTrackClass {
       .wheelDelta(wheelDelta)
       .on("zoom", this.handleZoom.bind(this));
     select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
+
+    effect(() => {
+      this.zoomed(this.xSignal.value, this._refYScale);
+    });
   }
 
   /**
@@ -85,13 +97,6 @@ export class GoslingTrack extends GoslingTrackClass {
   handleZoom(event: D3ZoomEvent<HTMLElement, unknown>): void {
     const transform = event.transform;
     const newXScale = transform.rescaleX(this._refXScale);
-    // const newYScale = transform.rescaleY(this._refYScale);
-    this.zoomed(
-      newXScale,
-      this._refYScale,
-      transform.k,
-      transform.x + this.position[0],
-      transform.y + this.position[1]
-    );
+    this.xSignal.value = newXScale;
   }
 }

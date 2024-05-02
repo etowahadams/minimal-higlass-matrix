@@ -1,8 +1,9 @@
-import { HeatmapTiledPixiTrack } from "./higlass/HeatmapTiledPixiTrack";
 import {
-  TiledPixiTrackContext,
-  TiledPixiTrackOptions,
-} from "./higlass/types";
+  GoslingTrackClass,
+  GoslingTrackOptions,
+  GoslingTrackContext,
+} from "./gosling/gosling-track";
+import { TiledPixiTrackContext, TiledPixiTrackOptions } from "./higlass/types";
 import * as PIXI from "pixi.js";
 import { fakePubSub } from "./higlass/utils";
 import { scaleLinear } from "d3-scale";
@@ -10,33 +11,13 @@ import { scaleLinear } from "d3-scale";
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 
-type HeatmapTrackContext = TiledPixiTrackContext & {
-  svgElement: HTMLElement;
-  onTrackOptionsChanged: () => void;
-  onMouseMoveZoom?: (event: any) => void;
-  isShowGlobalMousePosition?: () => boolean; // only used when options.showMousePosition is true
-  isValueScaleLocked: () => boolean;
-};
-
-type HeatmapTrackOptions = TiledPixiTrackOptions & {
-  dataTransform?: unknown;
-  extent?: string;
-  reverseYAxis?: boolean;
-  showTooltip?: boolean;
-  heatmapValueScaling?: string;
-  colorRange?: unknown;
-  showMousePosition?: boolean;
-  scaleStartPercent?: unknown;
-  scaleEndPercent?: unknown;
-  labelPosition?: unknown;
-  colorbarPosition?: string;
-  colorbarBackgroundColor?: string;
-  colorbarBackgroundOpacity?: number;
-  zeroValueColor?: string;
-  selectRowsAggregationMode?: string;
-  selectRowsAggregationWithRelativeHeight?: unknown;
-  selectRowsAggregationMethod?: unknown;
-};
+// type HeatmapTrackContext = TiledPixiTrackContext & {
+//   svgElement: HTMLElement;
+//   onTrackOptionsChanged: () => void;
+//   onMouseMoveZoom?: (event: any) => void;
+//   isShowGlobalMousePosition?: () => boolean; // only used when options.showMousePosition is true
+//   isValueScaleLocked: () => boolean;
+// };
 
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
@@ -49,25 +30,25 @@ function wheelDelta(event: WheelEvent) {
   );
 }
 
-export class HeatmapClient extends HeatmapTiledPixiTrack {
+export class GoslingTrack extends GoslingTrackClass {
   constructor(
     pixiContainer: PIXI.Container,
     overlayDiv: HTMLElement,
-    options: HeatmapTrackOptions
+    options: GoslingTrackOptions
   ) {
     const height = overlayDiv.clientHeight;
     const width = overlayDiv.clientWidth;
     // The colorbar svg element isn't quite working yet
     const colorbarDiv = document.createElement("svg");
     overlayDiv.appendChild(colorbarDiv);
-    
+
     // Setup the context object
-    const context: HeatmapTrackContext = {
+    const context: GoslingTrackContext = {
       scene: pixiContainer,
       id: "test",
       dataConfig: {
-        server: "http://higlass.io/api/v1",
-        tilesetUid: "CQMd6V_cRw6iCI_-Unl3PQ",
+        server: "https://resgen.io/api/v1",
+        tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
         // coordSystem: "hg19",
       },
       animate: () => {},
@@ -85,12 +66,8 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
     this.setDimensions([width, height]);
     this.setPosition([0, 0]);
     // Create some scales which span the whole genome
-    const refXScale = scaleLinear()
-      .domain([0, 3088269832])
-      .range([0, width]);
-    const refYScale = scaleLinear()
-      .domain([0, 3088269832])
-      .range([0, height]);
+    const refXScale = scaleLinear().domain([0, 3088269832]).range([0, width]);
+    const refYScale = scaleLinear().domain([0, 3088269832]).range([0, height]);
     // Set the scales
     this.zoomed(refXScale, refYScale, 1, 0, 0);
     this.refScalesChanged(refXScale, refYScale);
@@ -108,10 +85,10 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
   handleZoom(event: D3ZoomEvent<HTMLElement, unknown>): void {
     const transform = event.transform;
     const newXScale = transform.rescaleX(this._refXScale);
-    const newYScale = transform.rescaleY(this._refYScale);
+    // const newYScale = transform.rescaleY(this._refYScale);
     this.zoomed(
       newXScale,
-      newYScale,
+      this._refYScale,
       transform.k,
       transform.x + this.position[0],
       transform.y + this.position[1]

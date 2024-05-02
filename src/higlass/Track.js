@@ -15,7 +15,7 @@ import { isWithin, fakePubSub } from './utils';
  */
 
 /** @template Options */
-class Track {
+export class Track {
   /**
    * @param {TrackContext} context
    * @param {Options} options

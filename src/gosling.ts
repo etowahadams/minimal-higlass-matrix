@@ -11,6 +11,7 @@ import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type ScaleLinear } from "d3-scale";
 import { type Signal, effect } from "@preact/signals-core";
+import { DataFetcher } from './higlass'
 
 // type HeatmapTrackContext = TiledPixiTrackContext & {
 //   svgElement: HTMLElement;
@@ -37,6 +38,7 @@ export class GoslingTrack extends GoslingTrackClass {
   constructor(
     options: GoslingTrackOptions,
     xSignal: Signal<ScaleLinear<number, number>>,
+    dataFetcher: DataFetcher,
     containers: {
       pixiContainer: PIXI.Container;
       overlayDiv: HTMLElement;
@@ -53,6 +55,7 @@ export class GoslingTrack extends GoslingTrackClass {
     const context: GoslingTrackContext = {
       scene: pixiContainer,
       id: "test",
+      dataFetcher,
       dataConfig: {
         server: "https://resgen.io/api/v1",
         tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",

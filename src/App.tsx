@@ -7,6 +7,8 @@ import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
+import { fakePubSub } from "./higlass/utils";
+import { DataFetcher } from "./higlass";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
@@ -320,20 +322,20 @@ function App() {
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
 
     // Let's make a scatterplot
-    const position = { x: 10, y: 10, width: 300, height: 300 };
-    const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
-    new Scatterplot(
-      data,
-      pixiContainer,
-      overlayDiv,
-      pixiManager.app.renderer,
-      xSignal,
-      ySignal
-    );
+    // const position = { x: 10, y: 10, width: 300, height: 300 };
+    // const { pixiContainer, overlayDiv } = pixiManager.makeContainer(position);
+    // new Scatterplot(
+    //   data,
+    //   pixiContainer,
+    //   overlayDiv,
+    //   pixiManager.app.renderer,
+    //   xSignal,
+    //   ySignal
+    // );
 
     // Let's add a heatmap
     // const heatmapPosition = { x: 350, y: 30, width: 400, height: 400 };
-    // const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
+    // const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.makeContainer(heatmapPosition);
     // new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
     //   trackBorderWidth: 1,
     //   trackBorderColor: "black",
@@ -343,38 +345,50 @@ function App() {
     const genomeScale = scaleLinear().domain([0, 3088269832]).range([0, 800]);
     const xScaleSignal = signal<ScaleLinear<number, number>>(genomeScale);
 
+    const dataconfig = {
+      server: "https://resgen.io/api/v1",
+      tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
+      cacheTiles: true, // New option
+    };
+    const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
+
     const pos = { x: 10, y: 500, width: 800, height: 50 };
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos));
+    new GoslingTrack(
+      gosOptions,
+      xScaleSignal,
+      dataFetcher,
+      pixiManager.makeContainer(pos)
+    );
 
     const pos2 = {...pos,  y: pos.y + 50};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos2));
+    new GoslingTrack(gosOptions, xScaleSignal, dataFetcher, pixiManager.makeContainer(pos2));
 
     const pos3 = {...pos,  y: pos.y + 100};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos3));
+    new GoslingTrack(gosOptions, xScaleSignal, dataFetcher, pixiManager.makeContainer(pos3));
 
     const pos4 = {...pos,  y: pos.y + 150};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos4));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher,  pixiManager.makeContainer(pos4));
 
     const pos5 = {...pos,  y: pos.y + 200};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos5));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos5));
 
     const pos6 = {...pos,  y: pos.y + 250};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos6));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos6));
 
     const pos7 = {...pos,  y: pos.y + 300};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos7));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos7));
 
     const pos8 = {...pos,  y: pos.y + 350};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos8));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos8));
 
     const pos9 = {...pos,  y: pos.y + 400};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos9));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos9));
 
     const pos10 = {...pos,  y: pos.y + 450};
-    new GoslingTrack(gosOptions, xScaleSignal, pixiManager.getContainer(pos10));
+    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos10));
 
     // const { pixiContainer: gc2, overlayDiv: gd2 } =
-    //   pixiManager.getContainer({ x: 10, y: 720, width: 800, height: 200 });
+    //   pixiManager.makeContainer({ x: 10, y: 720, width: 800, height: 200 });
     // new GoslingTrack(gc2, gd2, gosOptions);
   }, []);
 

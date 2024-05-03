@@ -512,8 +512,10 @@ export class TiledPixiTrack extends PixiTrack {
       const tileIdStr = x;
       this.destroyTile(this.fetchedTiles[tileIdStr]);
 
-      if (tileIdStr in this.tileGraphics) {
+      if (tileIdStr in this.fetchedTiles) {
         this.pMain.removeChild(this.tileGraphics[tileIdStr]);
+        this.tileGraphics[tileIdStr].destroy({ children: true });
+
         delete this.tileGraphics[tileIdStr];
       }
 
@@ -646,13 +648,14 @@ export class TiledPixiTrack extends PixiTrack {
     const fetchedTileIDs = Object.keys(this.fetchedTiles);
     this.renderVersion += 1;
 
+    console.warn(fetchedTileIDs, Object.keys(this.tileGraphics));
     for (let i = 0; i < fetchedTileIDs.length; i++) {
       if (!(fetchedTileIDs[i] in this.tileGraphics)) {
         // console.trace('adding:', fetchedTileIDs[i]);
 
         const newGraphics = new GLOBALS.PIXI.Graphics();
         this.pMain.addChild(newGraphics);
-
+        console.warn('adding graphics')
         this.fetchedTiles[fetchedTileIDs[i]].graphics = newGraphics;
         this.initTile(this.fetchedTiles[fetchedTileIDs[i]]);
 

@@ -71,7 +71,7 @@ export class PixiManager {
     });
   }
 
-  getContainer(position: {
+  makeContainer(position: {
     x: number;
     y: number;
     width: number;

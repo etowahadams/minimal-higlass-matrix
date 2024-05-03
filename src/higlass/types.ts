@@ -9,6 +9,7 @@ export type DataConfig = {
   options?: unknown;
   type?: string;
   slicePos?: number;
+  cacheTiles?: boolean;
 };
 
 type ChromsizeRow = [string, number];

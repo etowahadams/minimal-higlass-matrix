@@ -300,6 +300,16 @@ const gosOptions = {
   },
 };
 
+function changeMarkColor(gosOption: any, color?: string) {
+  if (!color) {
+    color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
+  const newGosOption = structuredClone(gosOption);
+  newGosOption.spec.color = { value: color };
+  return newGosOption;
+
+}
+
 function App() {
   const [fps, setFps] = useState(120);
   const [minFps, setMinFps] = useState<number>();
@@ -352,40 +362,49 @@ function App() {
     };
     const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
-    const pos = { x: 10, y: 500, width: 800, height: 50 };
-    new GoslingTrack(
-      gosOptions,
-      xScaleSignal,
-      dataFetcher,
-      pixiManager.makeContainer(pos)
-    );
+    const colors = ['#E79F00', '#F29B67', '#565C8B', '#77C0FA', '#9B46E5', '#D73636', '#E38ADC', '#20102F', '#BB57C9', 'green']
 
-    const pos2 = {...pos,  y: pos.y + 50};
-    new GoslingTrack(gosOptions, xScaleSignal, dataFetcher, pixiManager.makeContainer(pos2));
 
-    const pos3 = {...pos,  y: pos.y + 100};
-    new GoslingTrack(gosOptions, xScaleSignal, dataFetcher, pixiManager.makeContainer(pos3));
+    colors.forEach((color, i) => {
+      const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
+      new GoslingTrack(changeMarkColor(gosOptions, color), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos));
+    })
 
-    const pos4 = {...pos,  y: pos.y + 150};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher,  pixiManager.makeContainer(pos4));
+    
+    // const pos = { x: 10, y: 100, width: 800, height: 50 };
+    // new GoslingTrack(
+    //   gosOptions,
+    //   xScaleSignal,
+    //   dataFetcher,
+    //   pixiManager.makeContainer(pos)
+    // );
 
-    const pos5 = {...pos,  y: pos.y + 200};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos5));
+    // const pos2 = {...pos,  y: pos.y + 50};
+    // new GoslingTrack(changeMarkColor(gosOptions, "#F29B67"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos2));
 
-    const pos6 = {...pos,  y: pos.y + 250};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos6));
+    // const pos3 = {...pos,  y: pos.y + 100};
+    // new GoslingTrack(changeMarkColor(gosOptions, "#565C8B"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos3));
 
-    const pos7 = {...pos,  y: pos.y + 300};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos7));
+    // const pos4 = {...pos,  y: pos.y + 150};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#77C0FA"}}}, xScaleSignal,dataFetcher,  pixiManager.makeContainer(pos4));
 
-    const pos8 = {...pos,  y: pos.y + 350};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos8));
+    // const pos5 = {...pos,  y: pos.y + 200};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#9B46E5"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos5));
 
-    const pos9 = {...pos,  y: pos.y + 400};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos9));
+    // const pos6 = {...pos,  y: pos.y + 250};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#D73636"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos6));
 
-    const pos10 = {...pos,  y: pos.y + 450};
-    new GoslingTrack(gosOptions, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos10));
+    // const pos7 = {...pos,  y: pos.y + 300};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#E38ADC"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos7));
+
+    // const pos8 = {...pos,  y: pos.y + 350};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#20102F"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos8));
+
+    // const pos9 = {...pos,  y: pos.y + 400};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos9));
+
+    // const pos10 = {...pos,  y: pos.y + 450};
+    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos10));
 
     // const { pixiContainer: gc2, overlayDiv: gd2 } =
     //   pixiManager.makeContainer({ x: 10, y: 720, width: 800, height: 200 });

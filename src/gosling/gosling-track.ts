@@ -443,8 +443,13 @@ export class GoslingTrackClass extends TiledPixiTrack<Tile, GoslingTrackOptions>
     // TODO: Instead of rendering and removing for every tiles, render pBorder only once
     this.pBackground.clear();
     this.pBackground.removeChildren();
-    this.pBorder.clear();
-    this.pBorder.removeChildren();
+
+    // Must destroy all children of pBorder to avoid memory leak
+    // TODO: only update pBorder when axis scale changes
+    this.pBorder.destroy({ children: true })
+    this.pBorder = new PIXI.Graphics();
+    this.pMain.addChild(this.pBorder);
+
     this.displayedLegends = [];
 
     // Because a single tile contains one track or multiple tracks overlaid, we draw marks and embellishments

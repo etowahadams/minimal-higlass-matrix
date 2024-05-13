@@ -9,6 +9,7 @@ import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
 import { fakePubSub } from "./higlass/utils";
 import { DataFetcher } from "./higlass";
+import { DuckDBFetcher } from "./duckdb";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
@@ -307,7 +308,6 @@ function changeMarkColor(gosOption: any, color?: string) {
   const newGosOption = structuredClone(gosOption);
   newGosOption.spec.color = { value: color };
   return newGosOption;
-
 }
 
 function App() {
@@ -360,55 +360,57 @@ function App() {
       tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
       cacheTiles: true, // New option
     };
-    const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
+    // const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
-    const colors = ['#E79F00', '#F29B67', '#565C8B', '#77C0FA', '#9B46E5', '#D73636', '#E38ADC', '#20102F', '#BB57C9', 'green']
+    const colors = [
+      "#E79F00",
+      "#F29B67",
+      "#565C8B",
+      "#77C0FA",
+      "#9B46E5",
+      "#D73636",
+      "#E38ADC",
+      "#20102F",
+      "#BB57C9",
+      "green",
+    ];
 
+    // colors.forEach((color, i) => {
+    //   const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
+    //   new GoslingTrack(
+    //     changeMarkColor(gosOptions, color),
+    //     xScaleSignal,
+    //     dataFetcher,
+    //     pixiManager.makeContainer(pos)
+    //   );
+    // });
 
-    colors.forEach((color, i) => {
-      const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
-      new GoslingTrack(changeMarkColor(gosOptions, color), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos));
-    })
+    const duckdbFetcher = new DuckDBFetcher();
+    const pos = { x: 10, y: 60, width: 800, height: 50 };
+    new GoslingTrack(
+      changeMarkColor(gosOptions, colors[0]),
+      xScaleSignal,
+      duckdbFetcher,
+      pixiManager.makeContainer(pos)
+    );
 
-    
-    // const pos = { x: 10, y: 100, width: 800, height: 50 };
-    // new GoslingTrack(
-    //   gosOptions,
-    //   xScaleSignal,
-    //   dataFetcher,
-    //   pixiManager.makeContainer(pos)
-    // );
+  }, []);
 
-    // const pos2 = {...pos,  y: pos.y + 50};
-    // new GoslingTrack(changeMarkColor(gosOptions, "#F29B67"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos2));
+  useEffect(() => {
+    // const jsonRowContent = [
+    //   { col1: 1, col2: "foo" },
+    //   { col1: 2, col2: "bar" },
+    // ];
 
-    // const pos3 = {...pos,  y: pos.y + 100};
-    // new GoslingTrack(changeMarkColor(gosOptions, "#565C8B"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos3));
+    // initDB().then(async (db) => {
+    //   await db.registerFileText("columns.json", JSON.stringify(jsonRowContent));
+    //   const conn = await db.connect();
+    //   await conn.insertJSONFromPath("columns.json", { name: "columns" });
 
-    // const pos4 = {...pos,  y: pos.y + 150};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#77C0FA"}}}, xScaleSignal,dataFetcher,  pixiManager.makeContainer(pos4));
-
-    // const pos5 = {...pos,  y: pos.y + 200};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#9B46E5"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos5));
-
-    // const pos6 = {...pos,  y: pos.y + 250};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#D73636"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos6));
-
-    // const pos7 = {...pos,  y: pos.y + 300};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#E38ADC"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos7));
-
-    // const pos8 = {...pos,  y: pos.y + 350};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#20102F"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos8));
-
-    // const pos9 = {...pos,  y: pos.y + 400};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos9));
-
-    // const pos10 = {...pos,  y: pos.y + 450};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos10));
-
-    // const { pixiContainer: gc2, overlayDiv: gd2 } =
-    //   pixiManager.makeContainer({ x: 10, y: 720, width: 800, height: 200 });
-    // new GoslingTrack(gc2, gd2, gosOptions);
+    //   const arrowResult = await conn.query("SELECT * FROM columns");
+    //   const result = arrowResult.toArray().map((row) => row.toJSON());
+    //   console.warn(result);
+    // });
   }, []);
 
   useEffect(() => {

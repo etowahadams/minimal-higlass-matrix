@@ -1,11 +1,6 @@
 import * as PIXI from "pixi.js";
 import { scaleLinear, type ScaleLinear } from "d3-scale";
-import {
-  D3ZoomEvent,
-  zoom,
-  zoomIdentity,
-  ZoomTransform,
-} from "d3-zoom";
+import { D3ZoomEvent, zoom, zoomIdentity, ZoomTransform } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect } from "@preact/signals-core";
 
@@ -41,7 +36,7 @@ const generateCircleTexture = (
 // Default d3 zoom feels slow so we use this instead
 // https://d3js.org/d3-zoom#zoom_wheelDelta
 function wheelDelta(event: WheelEvent) {
-  const defaultMultiplier = 5;
+  const defaultMultiplier = 4;
   return (
     -event.deltaY *
     (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
@@ -99,6 +94,11 @@ export class Scatterplot {
     // Attach zoom behavior to the canvas.
     const zoomBehavior = zoom<HTMLElement, unknown>()
       .wheelDelta(wheelDelta)
+      .on("end", () => (overlayDiv.__zoom = new ZoomTransform(1, 0, 0)))
+      .on("start", () => {
+        this.xScale.domain(this.xSignal.value.domain());
+        this.yScale.domain(this.ySignal.value.domain());
+      })
       .on("zoom", this.zoomed.bind(this));
     select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
 
@@ -163,36 +163,28 @@ export class Scatterplot {
 
   public zoomed(event: D3ZoomEvent<HTMLElement, unknown>): void {
     const transform = event.transform;
-    // const newDomainY = transform.rescaleY(scaleLinear()).domain();
 
-    // const base = [0, 1];
-    // const newDomainX = base.map((b) => (b - transform.x) / transform.k);
-    // const oldDomainX = this.xSignal.value.domain();
-    const oldDomainX = this.xSignal.value.domain();
-    const newDomainX = updateDomainX(oldDomainX, this.prevTransform, transform);
-    const oldDomainY = this.ySignal.value.domain();
-    const newDomainY = updateDomainY(oldDomainY, this.prevTransform, transform);
+    const xdom = rescaleX(transform, this.xScale);
+    const ydom = rescaleY(transform, this.yScale);
 
-    this.xSignal.value = scaleLinear().domain(newDomainX);
-    this.ySignal.value = scaleLinear().domain(newDomainY);
+    this.xSignal.value = scaleLinear().domain(xdom);
+    this.ySignal.value = scaleLinear().domain(ydom);
+    // this.ySignal.value = transform.rescaleY(scaleLinear())
 
     this.prevTransform = transform;
   }
 }
 
-
-function updateDomainX(oldDomain: number[], prevTransform: ZoomTransform, transform: ZoomTransform): number[] {
-  const k1 = prevTransform.k;
-  const k2 = transform.k;
-  const t1 = prevTransform.x;
-  const t2 = transform.x;
-  return oldDomain.map((d) => ((d * k1) + t1 - t2) / k2);
+function rescaleX(transform, scale: ScaleLinear<number, number>) {
+  return scale
+    .range()
+    .map(transform.invertX, transform)
+    .map(scale.invert, scale);
 }
 
-function updateDomainY(oldDomain: number[], prevTransform: ZoomTransform, transform: ZoomTransform): number[] {
-  const k1 = prevTransform.k;
-  const k2 = transform.k;
-  const t1 = prevTransform.y;
-  const t2 = transform.y;
-  return oldDomain.map((d) => ((d * k1) + t1 - t2) / k2);
+function rescaleY(transform, scale: ScaleLinear<number, number>) {
+  return scale
+    .range()
+    .map(transform.invertY, transform)
+    .map(scale.invert, scale);
 }

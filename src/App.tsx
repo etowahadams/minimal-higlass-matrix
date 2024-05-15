@@ -9,6 +9,8 @@ import { HeatmapClient } from "./heatmap";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
+const xSignal2 = signal<ScaleLinear<number, number>>(scaleLinear());
+const ySignal2 = signal<ScaleLinear<number, number>>(scaleLinear());
 
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
@@ -36,7 +38,7 @@ function App() {
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
     
     // Let's make a scatterplot 
-    const position = { x: 10, y: 10, width: 300, height: 300 };
+    const position = { x: 0, y: 10, width: 300, height: 300 };
     const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
     new Scatterplot(
       data,
@@ -47,14 +49,26 @@ function App() {
       ySignal
     )
 
-    // Let's add a heatmap
-    const heatmapPosition = { x: 10, y: 350, width: 400, height: 400 };
-    const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
-    new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
-      trackBorderWidth: 1,
-      trackBorderColor: "black",
-      colorbarPosition: "topRight",
-    });
+    const position2 = { x: 300, y: 10, width: 300, height: 300 };
+    const { pixiContainer: pixiContainer2, overlayDiv: overlayDiv2 } = pixiManager.getContainer(position2);
+    new Scatterplot(
+      data,
+      pixiContainer2,
+      overlayDiv2,
+      pixiManager.app.renderer,
+      xSignal,
+      ySignal2
+    )
+    const position3 = { x: 600, y: 10, width: 300, height: 300 };
+    const { pixiContainer: pixiContainer3, overlayDiv: overlayDiv3 } = pixiManager.getContainer(position3);
+    new Scatterplot(
+      data,
+      pixiContainer3,
+      overlayDiv3,
+      pixiManager.app.renderer,
+      xSignal2,
+      ySignal
+    )
 
   }, []);
 

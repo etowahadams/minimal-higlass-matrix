@@ -336,6 +336,7 @@ function App() {
     //   colorbarPosition: "topRight",
     // });
 
+    const xDomGenomic = signal([0, 3088269832]);
     const dataconfig = {
       server: "https://resgen.io/api/v1",
       tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
@@ -343,18 +344,16 @@ function App() {
     };
     const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
-    const genomeScale = scaleLinear().domain([0, 3088269832]).range([0, 800]);
-    const xScaleSignal = signal(genomeScale);
-
     trackColors.forEach((color, i) => {
       const pos = { x: 10, y: 400 + i * 60, width: 800, height: 50 };
       new GoslingTrack(
         changeMarkColor(gosOptions, color),
-        xScaleSignal,
+        xDomGenomic,
         dataFetcher,
         pixiManager.makeContainer(pos)
       );
     });
+
 
     const xDom1 = signal([0, 1]);
     const yDom1 = signal([0, 1]);

@@ -7,11 +7,6 @@ import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 
-const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
-const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
-const xSignal2 = signal<ScaleLinear<number, number>>(scaleLinear());
-const ySignal2 = signal<ScaleLinear<number, number>>(scaleLinear());
-
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
 }
@@ -36,40 +31,44 @@ function App() {
 
     // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
-    
-    // Let's make a scatterplot 
-    const position = { x: 0, y: 10, width: 300, height: 300 };
-    const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
-    new Scatterplot(
-      data,
-      pixiContainer,
-      overlayDiv,
-      pixiManager.app.renderer,
-      xSignal,
-      ySignal
-    )
 
-    const position2 = { x: 300, y: 10, width: 300, height: 300 };
-    const { pixiContainer: pixiContainer2, overlayDiv: overlayDiv2 } = pixiManager.getContainer(position2);
-    new Scatterplot(
-      data,
-      pixiContainer2,
-      overlayDiv2,
-      pixiManager.app.renderer,
-      xSignal,
-      ySignal2
-    )
-    const position3 = { x: 600, y: 10, width: 300, height: 300 };
-    const { pixiContainer: pixiContainer3, overlayDiv: overlayDiv3 } = pixiManager.getContainer(position3);
-    new Scatterplot(
-      data,
-      pixiContainer3,
-      overlayDiv3,
-      pixiManager.app.renderer,
-      xSignal2,
-      ySignal
-    )
+    const xDom1 = signal([0, 1]);
+    const yDom1 = signal([0, 1]);
+    const xDom2 = signal([0, 1]);
+    const yDom2 = signal([0, 1]);
 
+    // Let's make a scatterplot
+    const chartInfo = [
+      {
+        position: { x: 0, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom1,
+      },
+      {
+        position: { x: 300, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom2,
+      },
+      {
+        position: { x: 600, y: 10, width: 300, height: 300 },
+        xDom: xDom2,
+        yDom: yDom1,
+      },
+    ];
+
+    chartInfo.forEach((info) => {
+      const { pixiContainer, overlayDiv } = pixiManager.getContainer(
+        info.position
+      );
+      new Scatterplot(
+        data,
+        pixiContainer,
+        overlayDiv,
+        pixiManager.app.renderer,
+        info.xDom,
+        info.yDom
+      );
+    });
   }, []);
 
   useEffect(() => {

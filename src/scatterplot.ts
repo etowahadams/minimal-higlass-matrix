@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js";
 import { scaleLinear, type ScaleLinear } from "d3-scale";
-import { D3ZoomEvent, zoom, zoomIdentity, ZoomTransform } from "d3-zoom";
+import { D3ZoomEvent, zoom, ZoomTransform } from "d3-zoom";
 import { select } from "d3-selection";
-import { type Signal, effect } from "@preact/signals-core";
+import { signal, effect, type Signal } from "@preact/signals-core";
 
 // temporary fix https://stackoverflow.com/a/54020925
 // @types/d3-select does not have the right version of d3-transition
@@ -44,80 +44,71 @@ function wheelDelta(event: WheelEvent) {
   );
 }
 
+/**
+ * Helper function to create a masked container
+ */
+function createMaskedContainer(width: number, height: number) {
+  // Create a graphics object to define our mask
+  const mask = new PIXI.Graphics();
+  mask.beginFill(0xffffff);
+  mask.drawRect(0, 0, width, height);
+  mask.endFill();
+  // Add container that will hold our masked content
+  const maskContainer = new PIXI.Container();
+  maskContainer.mask = mask;
+  maskContainer.addChild(mask);
+  return maskContainer;
+}
+
 export class Scatterplot {
-  private pMain: PIXI.Graphics;
-  private pBorder: PIXI.Graphics;
-  private data: Data[] = [];
-  private xScale: ScaleLinear<number, number> = scaleLinear();
-  private yScale: ScaleLinear<number, number> = scaleLinear();
-  private circles: PIXI.Sprite[] = [];
-  private renderer: PIXI.IRenderer<HTMLCanvasElement>;
-  private width: number;
-  private height: number;
-  private xSignal: Signal<ScaleLinear<number, number>>;
-  private ySignal: Signal<ScaleLinear<number, number>>;
-  private prevTransform: ZoomTransform = zoomIdentity;
+  #pMain: PIXI.Graphics;
+  #pBorder: PIXI.Graphics;
+  #data: Data[] = [];
+  #xScale: ScaleLinear<number, number> = scaleLinear();
+  #yScale: ScaleLinear<number, number> = scaleLinear();
+  circles: PIXI.Sprite[] = [];
+  renderer: PIXI.IRenderer<HTMLCanvasElement>;
+  width: number;
+  height: number;
+  #xDomain: Signal<number[]>;
+  #yDomain: Signal<number[]>;
+  #element: HTMLElement;
 
   constructor(
     data: Data[],
     pContainer: PIXI.Container,
     overlayDiv: HTMLElement,
     renderer: PIXI.IRenderer<HTMLCanvasElement>,
-    xSignal: Signal<ScaleLinear<number, number>>,
-    ySignal: Signal<ScaleLinear<number, number>>
+    xDomain: Signal<number[]> = signal([0, 1]),
+    yDomain: Signal<number[]> = signal([0, 1])
   ) {
+    this.#element = overlayDiv;
     this.width = overlayDiv.clientWidth;
     this.height = overlayDiv.clientHeight;
-    this.xSignal = xSignal;
-    this.ySignal = ySignal;
+    this.#xDomain = xDomain;
+    this.#yDomain = yDomain;
+    this.renderer = renderer;
+    this.#data = data;
 
     // Create a graphics object to define our mask
-    const mask = new PIXI.Graphics();
-    mask.beginFill(0xffffff);
-    mask.drawRect(0, 0, this.width, this.height);
-    mask.endFill();
-    // Add container that will hold our masked content
-    const maskContainer = new PIXI.Container();
-    maskContainer.mask = mask;
-    maskContainer.addChild(mask);
+    const maskedContainer = createMaskedContainer(this.width, this.height);
 
-    this.pMain = new PIXI.Graphics();
-    this.pBorder = new PIXI.Graphics();
-    maskContainer.addChild(this.pMain);
-    maskContainer.addChild(this.pBorder);
-    pContainer.addChild(maskContainer);
+    this.#pMain = new PIXI.Graphics();
+    this.#pBorder = new PIXI.Graphics();
+    maskedContainer.addChild(this.#pMain);
+    maskedContainer.addChild(this.#pBorder);
+    pContainer.addChild(maskedContainer);
 
     this.drawBorder();
-
-    this.renderer = renderer;
-
-    // Attach zoom behavior to the canvas.
-    const zoomBehavior = zoom<HTMLElement, unknown>()
-      .wheelDelta(wheelDelta)
-      .on("end", () => (overlayDiv.__zoom = new ZoomTransform(1, 0, 0)))
-      .on("start", () => {
-        this.xScale.domain(this.xSignal.value.domain());
-        this.yScale.domain(this.ySignal.value.domain());
-      })
-      .on("zoom", this.zoomed.bind(this));
-    select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
-
-    this.data = data; // You can specify the number of points you want
     this.createCircles();
     this.drawData();
 
-    // effect(() => {
-    //   // console.warn(this.xSignal.value.domain())
-    //   const start = this.xSignal.value.domain()[0];
-    //   console.warn(transform.k);
-    //   transform.x = -start
-    //   // console.warn(zoomTransform(select(element).node() as HTMLElement).x);
-    // })
+    this.#addZoom();
   }
 
   private createCircles(): void {
     const multiplier = 2;
-    this.circles = this.data.map((point) => {
+    this.circles = this.#data.map((point) => {
       const circleTexture = generateCircleTexture(
         this.renderer,
         point.size * multiplier,
@@ -130,7 +121,7 @@ export class Scatterplot {
       circle.scale.set(1 / multiplier);
       circle.position.x = point.x;
       circle.position.y = point.y;
-      this.pMain.addChild(circle);
+      this.#pMain.addChild(circle);
       return circle;
     });
   }
@@ -138,9 +129,12 @@ export class Scatterplot {
   private drawData(): void {
     // Draw the points again
     effect(() => {
-      this.data.forEach((point, i) => {
-        const scaledX = this.xSignal.value(point.x);
-        const scaledY = this.ySignal.value(point.y);
+      const xScale = scaleLinear().domain(this.#xDomain.value);
+      const yScale = scaleLinear().domain(this.#yDomain.value);
+
+      this.#data.forEach((point, i) => {
+        const scaledX = xScale(point.x);
+        const scaledY = yScale(point.y);
         if (!this.isPointVisisble(scaledX, scaledY)) {
           this.circles[i].visible = false;
           return;
@@ -151,40 +145,38 @@ export class Scatterplot {
     });
   }
 
+  #addZoom(): void {
+    const zoomed = (event: D3ZoomEvent<HTMLElement, unknown>) => {
+      const transform = event.transform;
+
+      const xdom = transform.rescaleX(this.#xScale).domain();
+      const ydom = transform.rescaleY(this.#yScale).domain();
+
+      this.#xDomain.value = xdom;
+      this.#yDomain.value = ydom;
+    };
+
+    // Attach zoom behavior to the canvas.
+    const zoomBehavior = zoom<HTMLElement, unknown>()
+      .wheelDelta(wheelDelta)
+      // @ts-expect-error We need to reset the transform when the user stops zooming
+      .on("end", () => (this.#element.__zoom = new ZoomTransform(1, 0, 0)))
+      .on("start", () => {
+        this.#xScale.domain(this.#xDomain.value);
+        this.#yScale.domain(this.#yDomain.value);
+      })
+      .on("zoom", zoomed.bind(this));
+
+    select<HTMLElement, unknown>(this.#element).call(zoomBehavior);
+  }
+
   private drawBorder(): void {
-    this.pBorder.clear();
-    this.pBorder.lineStyle(1, 0x000000); // Change the color to black
-    this.pBorder.drawRect(0, 0, this.width, this.height);
+    this.#pBorder.clear();
+    this.#pBorder.lineStyle(1, 0x000000); // Change the color to black
+    this.#pBorder.drawRect(0, 0, this.width, this.height);
   }
 
   private isPointVisisble(x: number, y: number): boolean {
     return x >= -10 && x <= this.width && y >= -10 && y <= this.height + 10;
   }
-
-  public zoomed(event: D3ZoomEvent<HTMLElement, unknown>): void {
-    const transform = event.transform;
-
-    const xdom = rescaleX(transform, this.xScale);
-    const ydom = rescaleY(transform, this.yScale);
-
-    this.xSignal.value = scaleLinear().domain(xdom);
-    this.ySignal.value = scaleLinear().domain(ydom);
-    // this.ySignal.value = transform.rescaleY(scaleLinear())
-
-    this.prevTransform = transform;
-  }
-}
-
-function rescaleX(transform, scale: ScaleLinear<number, number>) {
-  return scale
-    .range()
-    .map(transform.invertX, transform)
-    .map(scale.invert, scale);
-}
-
-function rescaleY(transform, scale: ScaleLinear<number, number>) {
-  return scale
-    .range()
-    .map(transform.invertY, transform)
-    .map(scale.invert, scale);
 }

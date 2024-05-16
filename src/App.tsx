@@ -1,21 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { FpsPanel } from "./FpsPanel";
 import { signal } from "@preact/signals-core";
-import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 
-function avg(arr: number[]) {
-  return arr.reduce((a, b) => a + b) / arr.length;
-}
-
 function App() {
   const [fps, setFps] = useState(120);
-  const [minFps, setMinFps] = useState<number>();
-  const lastFiveFps = useRef<number[]>([]);
 
   useEffect(() => {
     const data = generateRandomData({
@@ -72,30 +65,12 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    lastFiveFps.current.push(fps);
-    // Look at a window of the last 5 fps values
-    if (lastFiveFps.current.length > 5) {
-      lastFiveFps.current.shift();
-    }
-    const avgFps = avg(lastFiveFps.current);
-    if (minFps === undefined || avgFps < minFps) {
-      setMinFps(avgFps);
-    }
-    // This dependency array is not ideal since fps will get added to recordedFps.current a few extra times
-    // Minimal impact on accuracy though
-  }, [fps, minFps]);
-
   return (
     <>
-      <h1>HiGlass tracks using new renderer</h1>
-      <FpsPanel fps={fps} style={{ position: "absolute", left: 0, top: 0 }} />
+      <h1>HiGlass/Gosling tracks with new renderer</h1>
+
       <div className="card">
-        <div className="desc">
-          Current FPS:
-          {lastFiveFps.current.length > 0 &&
-            Math.min(...lastFiveFps.current).toFixed(0)}
-        </div>
+        <FpsPanel fps={fps} />
         <div className="card" id="plot"></div>
       </div>
     </>

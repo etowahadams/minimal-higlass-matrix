@@ -1,16 +1,16 @@
 import { scaleLinear, scaleLog, scaleQuantile } from "d3-scale";
 import { median, range, ticks } from "d3-array";
 
-import DataFetcher from "./datafetcher/DataFetcher";
+import DataFetcher from "../datafetchers/DataFetcher";
 import PixiTrack from "./PixiTrack";
 
 // Utils
 import { throttleAndDebounce, parseChromsizesRows, uuid } from "./utils";
-import backgroundTaskScheduler from "./background-task-scheduler";
+import backgroundTaskScheduler from "../background-task-scheduler";
 
 // Configs
-import { GLOBALS, ZOOM_DEBOUNCE } from "./configs";
-import { isResolutionsTilesetInfo, isTileSetInfo } from "./type-guards";
+import { GLOBALS, ZOOM_DEBOUNCE } from "../configs";
+import { isResolutionsTilesetInfo, isTileSetInfo } from "../type-guards";
 
 /**
  * Get a valueScale for a heatmap.
@@ -57,7 +57,7 @@ export function getValueScale(
   return ["linear", scaleLinear().range([254, 0]).domain([minValue, maxValue])];
 }
 
-/** @typedef {import('./types').TilesetInfo} TilesetInfo */
+/** @typedef {import('../types').TilesetInfo} TilesetInfo */
 
 /**
  * @typedef Scale
@@ -96,7 +96,7 @@ export function getValueScale(
 /**
  * @typedef TiledPixiTrackContextBase
  * @property {DataFetcher} dataFetcher
- * @property {import('./types').DataConfig} dataConfig
+ * @property {import('../types').DataConfig} dataConfig
  * @property {function} animate A function to redraw this track. Typically called when an
  *  asynchronous event occurs (i.e. tiles loaded)
  * @property {() => void} onValueScaleChanged The range of values has changed so we need to inform
@@ -525,8 +525,8 @@ export class TiledPixiTrack extends PixiTrack {
   }
 
   /**
-   * @param {import('./types').Scale} newXScale
-   * @param {import('./types').Scale} newYScale
+   * @param {import('../types').Scale} newXScale
+   * @param {import('../types').Scale} newYScale
    */
   zoomed(newXScale, newYScale, k = 1, tx = 0, ty = 0) {
     this.xScale(newXScale);

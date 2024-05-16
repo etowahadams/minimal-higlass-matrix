@@ -1,5 +1,5 @@
 import { color } from "d3-color";
-import { GLOBALS } from "./configs";
+import { GLOBALS } from "../configs";
 import { scaleLinear } from "d3-scale";
 import { range } from "d3-array";
 import { rgb } from "d3-color";
@@ -427,7 +427,7 @@ const map = (f) => (x) => Array.prototype.map.call(x, f);
  */
 export const objVals = (obj) => map((key) => obj[key])(Object.keys(obj));
 
-export { default as showMousePosition } from './mouse-position';
+export { default as showMousePosition } from '../mouse-position';
 
 /**
  * Factory function for a value to RGB color converter

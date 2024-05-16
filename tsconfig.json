@@ -19,10 +19,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    // "baseUrl": ".",
-    // "paths": {
-    //   "@higlass/tracks": ["./src/higlass"]
-    // }
+    "baseUrl": ".",
+    "paths": {
+      "@higlass/*": ["src/higlass/*"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

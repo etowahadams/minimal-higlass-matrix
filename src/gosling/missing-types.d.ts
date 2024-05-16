@@ -207,6 +207,7 @@ declare module '@higlass/tracks' {
         refXScale(scale: Scale): void;
         refYScale(): this['_refYScale'];
         refYScale(scale: Scale): void;
+        refScalesChanged(refXScale: Scale, refYScale: Scale): void;
         xScale(): this['_xScale'];
         xScale(scale: Scale): void;
         yScale(): this['_yScale'];
@@ -482,6 +483,10 @@ declare module '@higlass/tracks' {
         getDataAtPos(relPos: number): number;
         mouseMoveHandler(mousePosition?: { x?: number; y?: number }): void;
         abstract mouseMoveZoomHandler(absX?: number, abxY?: number): void;
+    }
+
+    export abstract class HeatmapTiledPixiTrack<Options> extends Tiled1DPixiTrack<TileData, Options> {
+        // TODO: fill this out
     }
 
     class AxisPixi<Track> {

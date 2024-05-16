@@ -8,9 +8,9 @@ import {
   DenseDataExtrema2D,
 } from "./utils/index";
 
-import { uuid } from "../utils";
+import { uuid } from "../tracks/utils";
 // Services
-import { default as tileProxy } from "./tile-proxy";
+import { tileProxy } from "@higlass/services";
 
 /** @typedef {import('../types').DataConfig} DataConfig */
 /** @typedef {import('../types').TilesetInfo} TilesetInfo */

@@ -56,8 +56,6 @@ import {
 } from "./schema/gosling.schema.guards";
 import { flatArrayToPairArray } from "./core/utils/array";
 import {
-  createPluginTrack,
-  type PluginTrackFactory,
   type TrackConfig,
 } from "./core/utils/define-plugin-track";
 import { uuid } from "./core/utils/uuid";
@@ -65,11 +63,11 @@ import type { Context, Scale, TilePosition } from "@higlass/tracks";
 
 // Additions
 export const HIGLASS_AXIS_SIZE = 30;
-import { default as tileProxy } from "../higlass/datafetcher/tile-proxy";
-import { TiledPixiTrack } from "../higlass";
+import { tileProxy } from "@higlass/services";
+import { TiledPixiTrack } from "@higlass/tracks";
 import { select, Selection } from "d3-selection";
 import { format } from "d3-format";
-import { showMousePosition } from "../higlass/utils";
+import { showMousePosition } from "../higlass/tracks/utils";
 import { calculate1DVisibleTiles } from "./utils";
 
 // Set `true` to print in what order each function is called

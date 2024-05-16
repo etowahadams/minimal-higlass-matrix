@@ -4,14 +4,14 @@ import {
   GoslingTrackContext,
 } from "./gosling/gosling-track";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "./higlass/utils";
+import { fakePubSub } from "./higlass/tracks/utils";
 import { scaleLinear } from "d3-scale";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type ScaleLinear } from "d3-scale";
 import { type Signal, effect } from "@preact/signals-core";
-import { DataFetcher } from './higlass'
+import { DataFetcher } from '@higlass/datafetchers'
 
 // type HeatmapTrackContext = TiledPixiTrackContext & {
 //   svgElement: HTMLElement;
@@ -78,9 +78,9 @@ export class GoslingTrack extends GoslingTrackClass {
     this.setPosition([0, 0]);
     // Create some scales which span the whole genome
     const refXScale = scaleLinear().domain([0, 3088269832]).range([0, width]);
-    const refYScale = scaleLinear().domain([0, 3088269832]).range([0, height]);
+    const refYScale = scaleLinear();
     // Set the scales
-    this.zoomed(refXScale, refYScale, 1, 0, 0);
+    this.zoomed(refXScale, refYScale);
     this.refScalesChanged(refXScale, refYScale);
 
     // Attach zoom behavior to the canvas.

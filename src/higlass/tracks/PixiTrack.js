@@ -5,11 +5,11 @@ import Track from './Track';
 import { colorToHex, uuid } from './utils';
 
 // Configs
-import { GLOBALS } from './configs';
+import { GLOBALS } from '../configs';
 import {
   isResolutionsTilesetInfo,
   isLegacyTilesetInfo,
-} from './type-guards';
+} from '../type-guards';
 
 /**
  * Format a resolution relative to the highest possible resolution.

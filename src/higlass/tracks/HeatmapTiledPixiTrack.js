@@ -21,13 +21,13 @@ import TiledPixiTrack, { getValueScale } from "./TiledPixiTrack";
 import AxisPixi from "./AxisPixi";
 
 // Services
-import { default as tileProxy } from "./datafetcher/tile-proxy";
+import { default as tileProxy } from "../services/tile-proxy";
 
 import {
   GLOBALS,
   HEATED_OBJECT_MAP,
   NUM_PRECOMP_SUBSETS_PER_2D_TTILE,
-} from "./configs";
+} from "../configs";
 
 const COLORBAR_MAX_HEIGHT = 200;
 const COLORBAR_WIDTH = 10;

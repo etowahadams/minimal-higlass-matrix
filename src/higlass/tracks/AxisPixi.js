@@ -1,7 +1,7 @@
 import { format } from 'd3-format';
 
 // Configs
-import { GLOBALS, THEME_DARK } from './configs';
+import { GLOBALS, THEME_DARK } from '../configs';
 
 import { colorToHex } from './utils';
 

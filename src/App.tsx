@@ -7,8 +7,8 @@ import { signal } from "@preact/signals-core";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
-import { fakePubSub } from "./higlass/utils";
-import { DataFetcher } from "./higlass";
+import { fakePubSub } from "./higlass/tracks/utils";
+import { DataFetcher } from "@higlass/datafetchers";
 import { scaleLinear } from "d3-scale";
 
 const gosOptions = {

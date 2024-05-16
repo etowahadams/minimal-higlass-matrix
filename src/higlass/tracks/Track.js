@@ -6,7 +6,7 @@ import { isWithin, fakePubSub } from './utils';
  * @typedef TrackContext
  * @property {string} id - The track ID.
  * @property {import('pub-sub-es').PubSub & { __fake__?: boolean }} [pubSub] - The pub-sub channel.
- * @property {() => import('./types').Theme} [getTheme] - A function that returns the current theme.
+ * @property {() => import('../types').Theme} [getTheme] - A function that returns the current theme.
  */
 
 /**
@@ -29,18 +29,18 @@ export class Track {
 
     /** @type {string} */
     this.id = id;
-    /** @type {import('./types').Scale} */
+    /** @type {import('../types').Scale} */
     this._xScale = scaleLinear();
-    /** @type {import('./types').Scale} */
+    /** @type {import('../types').Scale} */
     this._yScale = scaleLinear();
 
     // reference scales used for tracks that can translate and scale
     // their graphics
     // They will draw their graphics on the reference scales and then translate
     // and pan them as needed
-    /** @type {import('./types').Scale} */
+    /** @type {import('../types').Scale} */
     this._refXScale = scaleLinear();
-    /** @type {import('./types').Scale} */
+    /** @type {import('../types').Scale} */
     this._refYScale = scaleLinear();
 
     /** @type {[number, number]} */
@@ -52,7 +52,7 @@ export class Track {
     /** @type {Array<import('pub-sub-es').Subscription>} */
     this.pubSubs = [];
 
-    /** @type {() => (import('./types').Theme | undefined)} */
+    /** @type {() => (import('../types').Theme | undefined)} */
     this.getTheme = getTheme ?? (() => undefined);
 
     this.pubSubs.push(
@@ -141,18 +141,18 @@ export class Track {
 
   /**
    * @overload
-   * @return {import('./types').Scale}
+   * @return {import('../types').Scale}
    */
   /**
    * @overload
-   * @param {import('./types').Scale} scale
+   * @param {import('../types').Scale} scale
    * @return {this}
    */
   /**
    * Either get or set the reference xScale
    *
-   * @param {import('./types').Scale=} scale
-   * @return {import('./types').Scale | this}
+   * @param {import('../types').Scale=} scale
+   * @return {import('../types').Scale | this}
    */
   refXScale(scale) {
     if (!scale) return this._refXScale;
@@ -162,18 +162,18 @@ export class Track {
 
   /**
    * @overload
-   * @return {import('./types').Scale}
+   * @return {import('../types').Scale}
    */
   /**
    * @overload
-   * @param {import('./types').Scale} scale
+   * @param {import('../types').Scale} scale
    * @return {this}
    */
   /**
    * Either get or set the reference yScale
    *
-   * @param {import('./types').Scale=} scale
-   * @return {import('./types').Scale | this}
+   * @param {import('../types').Scale=} scale
+   * @return {import('../types').Scale | this}
    */
   refYScale(scale) {
     if (!scale) return this._refYScale;
@@ -183,18 +183,18 @@ export class Track {
 
   /**
    * @overload
-   * @return {import('./types').Scale}
+   * @return {import('../types').Scale}
    */
   /**
    * @overload
-   * @param {import('./types').Scale} scale
+   * @param {import('../types').Scale} scale
    * @return {this}
    */
   /**
    * Either get or set the xScale
    *
-   * @param {import('./types').Scale=} scale
-   * @return {import('./types').Scale | this}
+   * @param {import('../types').Scale=} scale
+   * @return {import('../types').Scale | this}
    */
   xScale(scale) {
     if (!scale) return this._xScale;
@@ -204,18 +204,18 @@ export class Track {
 
   /**
    * @overload
-   * @return {import('./types').Scale}
+   * @return {import('../types').Scale}
    */
   /**
    * @overload
-   * @param {import('./types').Scale} scale
+   * @param {import('../types').Scale} scale
    * @return {this}
    */
   /**
    * Either get or set the yScale
    *
-   * @param {import('./types').Scale=} scale
-   * @return {import('./types').Scale | this}
+   * @param {import('../types').Scale=} scale
+   * @return {import('../types').Scale | this}
    */
   yScale(scale) {
     if (!scale) return this._yScale;
@@ -224,8 +224,8 @@ export class Track {
   }
 
   /**
-   * @param {import('./types').Scale} newXScale
-   * @param {import('./types').Scale} newYScale
+   * @param {import('../types').Scale} newXScale
+   * @param {import('../types').Scale} newYScale
    * @returns {void}
    */
   zoomed(newXScale, newYScale) {
@@ -234,8 +234,8 @@ export class Track {
   }
 
   /**
-   * @param {import('./types').Scale} refXScale
-   * @param {import('./types').Scale} refYScale
+   * @param {import('../types').Scale} refXScale
+   * @param {import('../types').Scale} refYScale
    * @returns {void}
    */
   refScalesChanged(refXScale, refYScale) {

@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { Coordinator } from "./pixi-manager";
+import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
 import { FpsPanel } from "./FpsPanel";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
-
-const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
-const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
+import { Scatterplot } from "./scatterplot";
+import { HeatmapClient } from "./heatmap";
 
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
@@ -30,14 +29,47 @@ function App() {
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
-    const newPlot = new Coordinator(1000, 1000, plotElement, setFps);
 
-    newPlot.addPlot(data, { x: 10, y: 10, width: 300, height: 300 }, xSignal, ySignal);
-    newPlot.addPlot(data, { x: 400, y: 10, width: 300, height: 300 }, xSignal, ySignal);
-    // newPlot.addPlot(data, { x: 10, y: 170, width: 480, height: 150 });
-    newPlot.addPixiPlot({ x: 10, y: 350, width: 400, height: 400 });
+    // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
+    const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
 
-    newPlot.addPixiPlot({ x: 420, y: 350, width: 500, height: 500 });
+    const xDom1 = signal([0, 1]);
+    const yDom1 = signal([0, 1]);
+    const xDom2 = signal([0, 1]);
+    const yDom2 = signal([0, 1]);
+
+    // Let's make a scatterplot
+    const chartInfo = [
+      {
+        position: { x: 0, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom1,
+      },
+      {
+        position: { x: 300, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom2,
+      },
+      {
+        position: { x: 600, y: 10, width: 300, height: 300 },
+        xDom: xDom2,
+        yDom: yDom1,
+      },
+    ];
+
+    chartInfo.forEach((info) => {
+      const { pixiContainer, overlayDiv } = pixiManager.getContainer(
+        info.position
+      );
+      new Scatterplot(
+        data,
+        pixiContainer,
+        overlayDiv,
+        pixiManager.app.renderer,
+        info.xDom,
+        info.yDom
+      );
+    });
   }, []);
 
   useEffect(() => {
@@ -56,7 +88,7 @@ function App() {
 
   return (
     <>
-      <h1>Minimal HiGlass Matrix</h1>
+      <h1>HiGlass tracks using new renderer</h1>
       <FpsPanel fps={fps} style={{ position: "absolute", left: 0, top: 0 }} />
       <div className="card">
         <div className="desc">
@@ -66,9 +98,6 @@ function App() {
         </div>
         <div className="card" id="plot"></div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }

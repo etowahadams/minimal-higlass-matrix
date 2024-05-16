@@ -1,11 +1,11 @@
 import * as PIXI from "pixi.js";
-import { PlotClient } from "./plot-client";
+import { Scatterplot } from "./scatterplot";
 import { zoom, D3ZoomEvent } from "d3-zoom";
 import { select } from "d3-selection";
 import { Data } from "./utils";
 // import { PixiClient } from "./pixi-client";
 // import { TiledPixiClient } from "./tiled-pixi-client";
-import { HeatmapClient } from "./heatmap-client";
+import { HeatmapClient } from "./heatmap";
 import { type Signal } from "@preact/signals-core";
 import { ScaleLinear } from "d3-scale";
 
@@ -38,9 +38,9 @@ export function createOverlayElement(position: {
   return overlay;
 }
 
-export class Coordinator {
-  private app: PIXI.Application<HTMLCanvasElement>;
-  private plots: PlotClient[] = [];
+export class PixiManager {
+  app: PIXI.Application<HTMLCanvasElement>;
+  private plots: Scatterplot[] = [];
   private containerElement: HTMLDivElement;
 
   constructor(
@@ -55,6 +55,13 @@ export class Coordinator {
       antialias: true,
       view: document.createElement("canvas"),
       backgroundColor: 0xffffff,
+      eventMode: "static",
+      eventFeatures: {
+        move: false,
+        globalMove: false,
+        click: true,
+        wheel: false,
+      },
     });
     this.containerElement = container;
     container.appendChild(this.app.view);
@@ -64,40 +71,28 @@ export class Coordinator {
     });
   }
 
-  public addPlot(
-    data: Data[],
-    position: { x: number; y: number; width: number; height: number },
-    xSignal: Signal<ScaleLinear<number, number>>,
-    ySignal: Signal<ScaleLinear<number, number>>
-  ): void {
+  getContainer(position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): { pixiContainer: PIXI.Container; overlayDiv: HTMLDivElement } {
+    const pContainer = new PIXI.Container();
+    pContainer.position.set(position.x, position.y);
+    this.app.stage.addChild(pContainer);
+
     const plotDiv = createOverlayElement(position);
     this.containerElement.appendChild(plotDiv);
-    const { width, height } = position;
 
-    const plotGraphics = new PIXI.Graphics();
-    plotGraphics.position.set(position.x, position.y);
-    this.app.stage.addChild(plotGraphics);
-
-    this.plots.push(
-      new PlotClient(
-        data,
-        { width, height },
-        plotGraphics,
-        plotDiv,
-        this.app.renderer,
-        xSignal,
-        ySignal
-      )
-    );
+    return { pixiContainer: pContainer, overlayDiv: plotDiv };
   }
 
-  public addPixiPlot(position: {
+  public addHeatmap(position: {
     x: number;
     y: number;
     width: number;
     height: number;
   }): void {
-
     const pContainer = new PIXI.Container();
     this.app.stage.addChild(pContainer);
 
@@ -105,30 +100,6 @@ export class Coordinator {
       trackBorderWidth: 1,
       trackBorderColor: "black",
       colorbarPosition: "topRight",
-    });
-  }
-
-  public zoomed(event: D3ZoomEvent<HTMLElement, unknown>) {
-    this.plots.forEach((plot) => plot.zoomed(event));
-  }
-
-  public scaleTo(scale: number, duration?: number): Promise<void> {
-    const zoomTime = duration || 1500;
-    const zoomBehavior = zoom<HTMLCanvasElement, unknown>()
-      .wheelDelta(wheelDelta)
-      .on("zoom", this.zoomed.bind(this));
-
-    const canvasElement = this.app.view;
-
-    select<HTMLCanvasElement, unknown>(canvasElement)
-      .transition()
-      .duration(zoomTime)
-      .call(zoomBehavior.scaleTo, scale);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, zoomTime);
     });
   }
 

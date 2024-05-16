@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
+import { FpsPanel } from "./FpsPanel";
 import { signal } from "@preact/signals-core";
-import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
@@ -12,10 +12,6 @@ import { DataFetcher } from "./higlass";
 
 const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
 const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
-
-function avg(arr: number[]) {
-  return arr.reduce((a, b) => a + b) / arr.length;
-}
 
 const gosOptions = {
   siblingIds: [],
@@ -312,36 +308,14 @@ function changeMarkColor(gosOption: any, color?: string) {
 
 function App() {
   const [fps, setFps] = useState(120);
-  const [minFps, setMinFps] = useState<number>();
-  const lastFiveFps = useRef<number[]>([]);
 
   useEffect(() => {
-    const data = generateRandomData({
-      count: 4000,
-      maxX: 4000,
-      maxY: 4000,
-      startX: -2000,
-      startY: -2000,
-      style: "different",
-    });
     // Create the new plot
     const plotElement = document.getElementById("plot") as HTMLDivElement;
     plotElement.innerHTML = "";
 
     // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
-
-    // Let's make a scatterplot
-    // const position = { x: 10, y: 10, width: 300, height: 300 };
-    // const { pixiContainer, overlayDiv } = pixiManager.makeContainer(position);
-    // new Scatterplot(
-    //   data,
-    //   pixiContainer,
-    //   overlayDiv,
-    //   pixiManager.app.renderer,
-    //   xSignal,
-    //   ySignal
-    // );
 
     // Let's add a heatmap
     // const heatmapPosition = { x: 350, y: 30, width: 400, height: 400 };
@@ -364,76 +338,64 @@ function App() {
 
     const colors = ['#E79F00', '#F29B67', '#565C8B', '#77C0FA', '#9B46E5', '#D73636', '#E38ADC', '#20102F', '#BB57C9', 'green']
 
-
     colors.forEach((color, i) => {
-      const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
+      const pos = { x: 10, y: 400 + i * 60, width: 800, height: 50 };
       new GoslingTrack(changeMarkColor(gosOptions, color), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos));
     })
-
     
-    // const pos = { x: 10, y: 100, width: 800, height: 50 };
-    // new GoslingTrack(
-    //   gosOptions,
-    //   xScaleSignal,
-    //   dataFetcher,
-    //   pixiManager.makeContainer(pos)
-    // );
+    const xDom1 = signal([0, 1]);
+    const yDom1 = signal([0, 1]);
+    const xDom2 = signal([0, 1]);
+    const yDom2 = signal([0, 1]);
 
-    // const pos2 = {...pos,  y: pos.y + 50};
-    // new GoslingTrack(changeMarkColor(gosOptions, "#F29B67"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos2));
+    // Let's make a scatterplot
+    const chartInfo = [
+      {
+        position: { x: 0, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom1,
+      },
+      {
+        position: { x: 300, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom2,
+      },
+      {
+        position: { x: 600, y: 10, width: 300, height: 300 },
+        xDom: xDom2,
+        yDom: yDom1,
+      },
+    ];
+    const data = generateRandomData({
+      count: 4000,
+      maxX: 4000,
+      maxY: 4000,
+      startX: -2000,
+      startY: -2000,
+      style: "different",
+    });
 
-    // const pos3 = {...pos,  y: pos.y + 100};
-    // new GoslingTrack(changeMarkColor(gosOptions, "#565C8B"), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos3));
-
-    // const pos4 = {...pos,  y: pos.y + 150};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#77C0FA"}}}, xScaleSignal,dataFetcher,  pixiManager.makeContainer(pos4));
-
-    // const pos5 = {...pos,  y: pos.y + 200};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#9B46E5"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos5));
-
-    // const pos6 = {...pos,  y: pos.y + 250};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#D73636"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos6));
-
-    // const pos7 = {...pos,  y: pos.y + 300};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#E38ADC"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos7));
-
-    // const pos8 = {...pos,  y: pos.y + 350};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#20102F"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos8));
-
-    // const pos9 = {...pos,  y: pos.y + 400};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos9));
-
-    // const pos10 = {...pos,  y: pos.y + 450};
-    // new GoslingTrack({...gosOptions, spec: { ...gosOptions.spec, color: { value: "#BB57C9"}}}, xScaleSignal,dataFetcher, pixiManager.makeContainer(pos10));
-
-    // const { pixiContainer: gc2, overlayDiv: gd2 } =
-    //   pixiManager.makeContainer({ x: 10, y: 720, width: 800, height: 200 });
-    // new GoslingTrack(gc2, gd2, gosOptions);
+    chartInfo.forEach((info) => {
+      const { pixiContainer, overlayDiv } = pixiManager.getContainer(
+        info.position
+      );
+      new Scatterplot(
+        data,
+        pixiContainer,
+        overlayDiv,
+        pixiManager.app.renderer,
+        info.xDom,
+        info.yDom
+      );
+    });
   }, []);
-
-  useEffect(() => {
-    lastFiveFps.current.push(fps);
-    // Look at a window of the last 5 fps values
-    if (lastFiveFps.current.length > 5) {
-      lastFiveFps.current.shift();
-    }
-    const avgFps = avg(lastFiveFps.current);
-    if (minFps === undefined || avgFps < minFps) {
-      setMinFps(avgFps);
-    }
-    // This dependency array is not ideal since fps will get added to recordedFps.current a few extra times
-    // Minimal impact on accuracy though
-  }, [fps, minFps]);
 
   return (
     <>
-      <h1>HiGlass tracks using new renderer</h1>
+      <h1>HiGlass/Gosling tracks with new renderer</h1>
+
       <div className="card">
-        <div className="desc">
-          Current FPS:
-          {lastFiveFps.current.length > 0 &&
-            Math.min(...lastFiveFps.current).toFixed(0)}
-        </div>
+        <FpsPanel fps={fps} />
         <div className="card" id="plot"></div>
       </div>
     </>

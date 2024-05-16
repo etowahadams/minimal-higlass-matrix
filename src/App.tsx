@@ -9,9 +9,7 @@ import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
 import { fakePubSub } from "./higlass/utils";
 import { DataFetcher } from "./higlass";
-
-const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
-const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
+import { scaleLinear } from "d3-scale";
 
 const gosOptions = {
   siblingIds: [],
@@ -296,6 +294,19 @@ const gosOptions = {
   },
 };
 
+const trackColors = [
+  "#E79F00",
+  "#F29B67",
+  "#565C8B",
+  "#77C0FA",
+  "#9B46E5",
+  "#D73636",
+  "#E38ADC",
+  "#20102F",
+  "#BB57C9",
+  "green",
+];
+
 function changeMarkColor(gosOption: any, color?: string) {
   if (!color) {
     color = "#" + Math.floor(Math.random() * 16777215).toString(16);
@@ -303,7 +314,6 @@ function changeMarkColor(gosOption: any, color?: string) {
   const newGosOption = structuredClone(gosOption);
   newGosOption.spec.color = { value: color };
   return newGosOption;
-
 }
 
 function App() {
@@ -326,9 +336,6 @@ function App() {
     //   colorbarPosition: "topRight",
     // });
 
-    const genomeScale = scaleLinear().domain([0, 3088269832]).range([0, 800]);
-    const xScaleSignal = signal<ScaleLinear<number, number>>(genomeScale);
-
     const dataconfig = {
       server: "https://resgen.io/api/v1",
       tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
@@ -336,13 +343,19 @@ function App() {
     };
     const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
-    const colors = ['#E79F00', '#F29B67', '#565C8B', '#77C0FA', '#9B46E5', '#D73636', '#E38ADC', '#20102F', '#BB57C9', 'green']
+    const genomeScale = scaleLinear().domain([0, 3088269832]).range([0, 800]);
+    const xScaleSignal = signal(genomeScale);
 
-    colors.forEach((color, i) => {
+    trackColors.forEach((color, i) => {
       const pos = { x: 10, y: 400 + i * 60, width: 800, height: 50 };
-      new GoslingTrack(changeMarkColor(gosOptions, color), xScaleSignal, dataFetcher, pixiManager.makeContainer(pos));
-    })
-    
+      new GoslingTrack(
+        changeMarkColor(gosOptions, color),
+        xScaleSignal,
+        dataFetcher,
+        pixiManager.makeContainer(pos)
+      );
+    });
+
     const xDom1 = signal([0, 1]);
     const yDom1 = signal([0, 1]);
     const xDom2 = signal([0, 1]);
@@ -376,7 +389,7 @@ function App() {
     });
 
     chartInfo.forEach((info) => {
-      const { pixiContainer, overlayDiv } = pixiManager.getContainer(
+      const { pixiContainer, overlayDiv } = pixiManager.makeContainer(
         info.position
       );
       new Scatterplot(

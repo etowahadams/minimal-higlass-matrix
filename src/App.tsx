@@ -7,9 +7,6 @@ import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
 import { HeatmapClient } from "./heatmap";
 
-const xSignal = signal<ScaleLinear<number, number>>(scaleLinear());
-const ySignal = signal<ScaleLinear<number, number>>(scaleLinear());
-
 function avg(arr: number[]) {
   return arr.reduce((a, b) => a + b) / arr.length;
 }
@@ -34,28 +31,44 @@ function App() {
 
     // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
-    
-    // Let's make a scatterplot 
-    const position = { x: 10, y: 10, width: 300, height: 300 };
-    const { pixiContainer, overlayDiv } = pixiManager.getContainer(position);
-    new Scatterplot(
-      data,
-      pixiContainer,
-      overlayDiv,
-      pixiManager.app.renderer,
-      xSignal,
-      ySignal
-    )
 
-    // Let's add a heatmap
-    const heatmapPosition = { x: 10, y: 350, width: 400, height: 400 };
-    const { pixiContainer: heatmapContainer, overlayDiv: heatmapOverlayDiv } = pixiManager.getContainer(heatmapPosition);
-    new HeatmapClient(heatmapContainer, heatmapOverlayDiv, {
-      trackBorderWidth: 1,
-      trackBorderColor: "black",
-      colorbarPosition: "topRight",
+    const xDom1 = signal([0, 1]);
+    const yDom1 = signal([0, 1]);
+    const xDom2 = signal([0, 1]);
+    const yDom2 = signal([0, 1]);
+
+    // Let's make a scatterplot
+    const chartInfo = [
+      {
+        position: { x: 0, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom1,
+      },
+      {
+        position: { x: 300, y: 10, width: 300, height: 300 },
+        xDom: xDom1,
+        yDom: yDom2,
+      },
+      {
+        position: { x: 600, y: 10, width: 300, height: 300 },
+        xDom: xDom2,
+        yDom: yDom1,
+      },
+    ];
+
+    chartInfo.forEach((info) => {
+      const { pixiContainer, overlayDiv } = pixiManager.getContainer(
+        info.position
+      );
+      new Scatterplot(
+        data,
+        pixiContainer,
+        overlayDiv,
+        pixiManager.app.renderer,
+        info.xDom,
+        info.yDom
+      );
     });
-
   }, []);
 
   useEffect(() => {

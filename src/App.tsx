@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { PixiManager } from "./pixi-manager";
 import { generateRandomData } from "./utils";
+import { FpsPanel } from "./FpsPanel";
 import { signal } from "@preact/signals-core";
 import { ScaleLinear, scaleLinear } from "d3-scale";
 import { Scatterplot } from "./scatterplot";
@@ -88,6 +89,7 @@ function App() {
   return (
     <>
       <h1>HiGlass tracks using new renderer</h1>
+      <FpsPanel fps={fps} style={{ position: "absolute", left: 0, top: 0 }} />
       <div className="card">
         <div className="desc">
           Current FPS:

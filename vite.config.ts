@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@higlass': '/src/higlass'
+      '@higlass': '/src/higlass',
+      '@gosling-lang': '/src/gosling'
     }
   }
 })

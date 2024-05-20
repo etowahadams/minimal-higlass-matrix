@@ -21,7 +21,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@higlass/*": ["src/higlass/*"]
+      "@higlass/*": ["src/higlass/*"],
+      "@gosling-lang/*": ["src/gosling/*"],
     }
   },
   "include": ["src"],

@@ -5,8 +5,9 @@
 import { BigWig, type Feature } from "@gmod/bbi";
 import type { Assembly, BigWigData } from "@gosling-lang/gosling-schema";
 import { computeChromSizes } from "../../core/utils/assembly";
-import { type CommonDataConfig, RemoteFile } from "../utils";
+import { type CommonDataConfig, RemoteFile, chrToAbs } from "../utils";
 import type { ChromInfo, TilesetInfo } from "@higlass/types";
+import { DenseDataExtrema1D } from "@higlass/utils";
 
 type BigWigDataConfig = BigWigData & CommonDataConfig;
 
@@ -228,12 +229,12 @@ export class BigWigDataFetcher {
             }).then((values) => {
               values.forEach(
                 (v: Feature & { startAbs?: number; endAbs?: number }) => {
-                  v["startAbs"] = HGC.utils.chrToAbs(
+                  v["startAbs"] = chrToAbs(
                     chromName,
                     v.start,
                     this.chromSizes
                   );
-                  v["endAbs"] = HGC.utils.chrToAbs(
+                  v["endAbs"] = chrToAbs(
                     chromName,
                     v.end,
                     this.chromSizes
@@ -260,12 +261,12 @@ export class BigWigDataFetcher {
               .then((values) => {
                 values.forEach(
                   (v: Feature & { startAbs?: number; endAbs?: number }) => {
-                    v["startAbs"] = HGC.utils.chrToAbs(
+                    v["startAbs"] = chrToAbs(
                       chromName,
                       v.start,
                       this.chromSizes
                     );
-                    v["endAbs"] = HGC.utils.chrToAbs(
+                    v["endAbs"] = chrToAbs(
                       chromName,
                       v.end,
                       this.chromSizes
@@ -304,7 +305,7 @@ export class BigWigDataFetcher {
         dense[index] = filtered.length > 0 ? filtered[0] : null;
       });
 
-      const dde = new HGC.utils.DenseDataExtrema1D(dense);
+      const dde = new DenseDataExtrema1D(dense);
       // @ts-expect-error Math.min() allows `null` but results in min
       tile.min_value = Math.min(...dense);
       // @ts-expect-error Math.max() allows `null` but results in min

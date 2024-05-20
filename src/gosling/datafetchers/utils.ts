@@ -54,7 +54,7 @@ export function filterUsingGenoPos(
 
 const chromInfoBisector = bisector((d: { pos: number }) => d.pos).left;
 
-const chrToAbs = (chrom: string, chromPos: number, chromInfo: HiGlass.ChromInfo) =>
+export const chrToAbs = (chrom: string, chromPos: number, chromInfo: HiGlass.ChromInfo) =>
     chromInfo.chrPositions[chrom].pos + chromPos;
 
 const absToChr = (absPosition: number, chromInfo: HiGlass.ChromInfo) => {

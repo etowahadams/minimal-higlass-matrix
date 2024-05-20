@@ -1,6 +1,7 @@
 import { PixiManager } from "src/pixi-manager";
 import { GoslingTrack } from "src/gosling";
 import { signal } from "@preact/signals-core";
+import { BigWigDataFetcher } from "@gosling-lang/datafetchers";
 
 // bigwig datafetcher
 // bar mark
@@ -314,11 +315,14 @@ const excitatory_neurons = {
 export function addCorces(pixiManager: PixiManager) {
   const xDomGenomic = signal([0, 3088269832]);
   const dataconfig = {
-    server: "https://resgen.io/api/v1",
-    tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
-    cacheTiles: true, // New option
+    url: "https://s3.amazonaws.com/gosling-lang.org/data/ExcitatoryNeurons-insertions_bin100_RIPnorm.bw",
+    type: "bigwig",
+    column: "position",
+    value: "peak",
+    assembly: "hg38",
   };
-  const dataFetcher = new BigWigDataFetcherClass(dataconfig);
+  
+  const dataFetcher = new BigWigDataFetcher(dataconfig);
 
   const pos = { x: 10, y: 400, width: 800, height: 50 };
   new GoslingTrack(

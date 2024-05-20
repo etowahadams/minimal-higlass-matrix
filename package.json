@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gmod/bbi": "^4.0.4",
     "@preact/signals-core": "^1.5.1",
     "ajv": "^8.12.0",
     "bezier-js": "^6.1.4",
@@ -23,6 +24,7 @@
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.1",
     "d3-zoom": "^3.0.0",
+    "generic-filehandle": "^3.1.2",
     "lodash-es": "^4.17.21",
     "nanoevents": "^9.0.0",
     "ndarray": "^1.0.19",

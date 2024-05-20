@@ -6,7 +6,7 @@ import {
   maxNonZero,
   DenseDataExtrema1D,
   DenseDataExtrema2D,
-} from "./utils/index";
+} from "@higlass/utils";
 
 import { uuid } from "../tracks/utils";
 // Services

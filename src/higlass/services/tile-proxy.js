@@ -3,7 +3,7 @@ import { uuid } from '../tracks/utils';
 
 import { workerGetTiles, workerSetPix } from '../datafetchers/worker';
 
-import { trimTrailingSlash as tts, timeout as sleep } from '../datafetchers/utils/index';
+import { trimTrailingSlash as tts, timeout as sleep } from '@higlass/utils';
 
 // Config
 import { TILE_FETCH_DEBOUNCE } from '../configs';

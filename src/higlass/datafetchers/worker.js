@@ -4,7 +4,7 @@ import {
   DenseDataExtrema2D,
   getAggregationFunction,
   selectedItemsToSize,
-} from './utils/index';
+} from '@higlass/utils';
 
 /**
  * This function helps to fill in pixData by calling setPixData()

@@ -12,6 +12,8 @@ import backgroundTaskScheduler from "./background-task-scheduler";
 import { GLOBALS, ZOOM_DEBOUNCE } from "../configs";
 import { isResolutionsTilesetInfo, isTileSetInfo } from "../type-guards";
 
+const DEBUG_PRINTS = false;
+
 /**
  * Get a valueScale for a heatmap.
  *
@@ -278,6 +280,7 @@ export class TiledPixiTrack extends PixiTrack {
         }
       }
 
+      if (DEBUG_PRINTS) console.warn("Got tileset info, going to refreshTiles");
       this.refreshTiles();
 
       if (handleTilesetInfoReceived) handleTilesetInfoReceived(tilesetInfo);
@@ -423,6 +426,8 @@ export class TiledPixiTrack extends PixiTrack {
     }));
 
     this.visibleTileIds = new Set(this.visibleTiles.map((x) => x.tileId));
+
+    if (DEBUG_PRINTS) console.warn("Checked to see what tiles are visible:", this.visibleTiles.map(tile => tile.tileId))
   }
 
   removeOldTiles() {
@@ -437,8 +442,9 @@ export class TiledPixiTrack extends PixiTrack {
     const toRemove = [...fetchedTileIDs].filter(
       (x) => !this.visibleTileIds.has(x)
     );
-
+    if (DEBUG_PRINTS) console.warn('removeOldTiles wants to remove these tiles', toRemove)
     this.removeTiles(toRemove);
+    if (DEBUG_PRINTS) console.warn('After removeOldTiles, fetchedTiles is', Object.keys(this.fetchedTiles))
   }
 
   refreshTiles() {
@@ -461,8 +467,14 @@ export class TiledPixiTrack extends PixiTrack {
       this.fetching.add(toFetch[i].remoteId);
     }
 
-    this.removeOldTiles();
-    this.fetchNewTiles(toFetch);
+    if (toFetch.length > 0) {
+      if (DEBUG_PRINTS) console.warn("Since we need to fetch new tiles, we will remove old tiles")
+      this.removeOldTiles();
+      if (DEBUG_PRINTS) console.warn("refreshTiles: TiledPixiTrack wants to fetch these tiles", toFetch.map(tile => tile.tileId))
+      this.fetchNewTiles(toFetch);
+    } else {
+      if (DEBUG_PRINTS) console.warn("no new tiles to fetch")
+    }
   }
 
   /** @param {Tile} tile */
@@ -682,6 +694,7 @@ export class TiledPixiTrack extends PixiTrack {
      */
 
     // keep track of which tiles are visible at the moment
+    if (DEBUG_PRINTS) console.warn("synchronizeTilesAndGraphics will call removeOldTiles, addMissingGraphics, and updateExistingGraphics")
     this.addMissingGraphics();
     this.removeOldTiles();
     this.updateExistingGraphics();
@@ -749,6 +762,7 @@ export class TiledPixiTrack extends PixiTrack {
    */
   /** @param {Object<string, import('./data-fetchers/DataFetcher').DividedTile | Tile | TilePositionArrayObject>} loadedTiles */
   receivedTiles(loadedTiles) {
+    if (DEBUG_PRINTS) console.warn("TiledPixiTrack got back these tiles", loadedTiles)
     for (let i = 0; i < this.visibleTiles.length; i++) {
       const { tileId } = this.visibleTiles[i];
 

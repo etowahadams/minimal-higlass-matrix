@@ -6,7 +6,7 @@ import PixiTrack from "./PixiTrack";
 
 // Utils
 import { throttleAndDebounce, parseChromsizesRows, uuid } from "./utils";
-import backgroundTaskScheduler from "../background-task-scheduler";
+import backgroundTaskScheduler from "./background-task-scheduler";
 
 // Configs
 import { GLOBALS, ZOOM_DEBOUNCE } from "../configs";

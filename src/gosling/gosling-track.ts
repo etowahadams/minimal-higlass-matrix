@@ -11,7 +11,17 @@ import type {
   Assembly,
   ValueExtent,
   Range,
-} from "./schema/gosling.schema";
+} from "@gosling-lang/gosling-schema";
+import {
+  validateTrack,
+  Is2DTrack,
+  IsChannelDeep,
+  IsMouseEventsDeep,
+  IsXAxis,
+  isTabularDataFetcher,
+  hasDataTransform,
+} from "@gosling-lang/gosling-schema";
+
 import { type MouseEventData, isPointInsideDonutSlice } from "./mouse-event";
 import { BamDataFetcher } from "./datafetchers/bam";
 import { type TabularDataFetcher } from "./data-abstraction";
@@ -27,7 +37,6 @@ import {
   drawPreEmbellishment,
 } from "./core/mark";
 import { GoslingTrackModel } from "./gosling-track-model";
-import { validateTrack } from "./schema/validate";
 import { shareScaleAcrossTracks } from "./core/utils/scales";
 import { resolveSuperposedTracks } from "./core/utils/overlay";
 import colorToHex from "./core/utils/color-to-hex";
@@ -46,18 +55,8 @@ import {
 import { publish } from "./pubsub";
 import { getRelativeGenomicPosition } from "./core/utils/assembly";
 import { getTextStyle } from "./core/utils/text-style";
-import {
-  Is2DTrack,
-  IsChannelDeep,
-  IsMouseEventsDeep,
-  IsXAxis,
-  isTabularDataFetcher,
-  hasDataTransform,
-} from "./schema/gosling.schema.guards";
 import { flatArrayToPairArray } from "./core/utils/array";
-import {
-  type TrackConfig,
-} from "./core/utils/define-plugin-track";
+import { type TrackConfig } from "./core/utils/define-plugin-track";
 import { uuid } from "./core/utils/uuid";
 import type { Context, Scale, TilePosition } from "@higlass/tracks";
 
@@ -158,7 +157,10 @@ const loadingTextStyle = getTextStyle({ color: "black", size: 12 });
  * The main plugin track in Gosling. This is a versetile plugin track for HiGlass which relies on GoslingTrackModel
  * to keep track of mouse event and channel scales.
  */
-export class GoslingTrackClass extends TiledPixiTrack<Tile, GoslingTrackOptions> {
+export class GoslingTrackClass extends TiledPixiTrack<
+  Tile,
+  GoslingTrackOptions
+> {
   /* *
    *
    *  Properties
@@ -198,18 +200,15 @@ export class GoslingTrackClass extends TiledPixiTrack<Tile, GoslingTrackOptions>
    *
    * */
 
-  constructor(
-    context: GoslingTrackContext,
-    options: GoslingTrackOptions
-  ) {
+  constructor(context: GoslingTrackContext, options: GoslingTrackOptions) {
     super(context, options);
     const { isShowGlobalMousePosition } = context;
-    this.#viewUid = context.viewUid
+    this.#viewUid = context.viewUid;
 
     if (context.dataFetcher) {
       context.dataFetcher.track = this;
     }
-    
+
     this.#processedTileInfo = {};
     this.#assembly = this.options.spec.assembly;
     this.gLegend = select(context.svgElement).append("g");
@@ -444,7 +443,7 @@ export class GoslingTrackClass extends TiledPixiTrack<Tile, GoslingTrackOptions>
 
     // Must destroy all children of pBorder to avoid memory leak
     // TODO: only update pBorder when axis scale changes
-    this.pBorder.destroy({ children: true })
+    this.pBorder.destroy({ children: true });
     this.pBorder = new PIXI.Graphics();
     this.pMain.addChild(this.pBorder);
 

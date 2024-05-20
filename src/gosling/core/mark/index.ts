@@ -18,7 +18,7 @@ import { drawCircularYAxis, drawLinearYAxis } from './axis';
 import { drawCircularOutlines } from './outline-circular';
 import { drawBackground } from './background';
 import type { CompleteThemeDeep } from '../utils/theme';
-import { Is2DTrack, IsVerticalRule } from '../../schema/gosling.schema.guards';
+import { Is2DTrack, IsVerticalRule } from '@gosling-lang/gosling-schema';
 import { drawBetweenLink } from './betweenLink';
 
 /**

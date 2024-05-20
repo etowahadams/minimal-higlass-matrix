@@ -1,4 +1,4 @@
-import type { HiGlassSpec } from '../../schema/gosling.schema';
+import type { HiGlassSpec } from "@gosling-lang/gosling-schema";
 
 /**
  * This makes sure that all the current zooming status is preserved when new tracks are added

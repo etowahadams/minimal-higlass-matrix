@@ -5,8 +5,8 @@ import type {
     Track,
     ChannelDeep,
     DataDeep
-} from '../../schema/gosling.schema';
-import { IsChannelDeep, IsDataTrack, IsOverlaidTrack, IsSingleTrack, IsDummyTrack } from '../../schema/gosling.schema.guards';
+} from "@gosling-lang/gosling-schema";
+import { IsChannelDeep, IsDataTrack, IsOverlaidTrack, IsSingleTrack, IsDummyTrack } from '@gosling-lang/gosling-schema';
 
 /**
  * Resolve superposed tracks into multiple track specifications.

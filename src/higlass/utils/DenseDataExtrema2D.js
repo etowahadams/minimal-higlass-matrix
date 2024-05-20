@@ -1,5 +1,5 @@
 import ndarray from 'ndarray';
-import { NUM_PRECOMP_SUBSETS_PER_2D_TTILE } from '../../configs';
+import { NUM_PRECOMP_SUBSETS_PER_2D_TTILE } from '../configs';
 
 /**
  * @typedef View2D

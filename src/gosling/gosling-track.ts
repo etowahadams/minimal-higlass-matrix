@@ -177,7 +177,7 @@ export class GoslingTrackClass extends TiledPixiTrack<
   gLegend?: Selection<SVGGElement, unknown, null, undefined>;
   displayedLegends: DisplayedLegend[] = []; // Store the color legends added so far so that we can avoid overlaps and redundancy
   // Used in mark/text.ts
-  textGraphics: unknown[] = [];
+  textGraphics: PIXI.Text[] = [];
   textsBeingUsed = 0;
   // Mouse fields
   pMouseHover = new PIXI.Graphics();

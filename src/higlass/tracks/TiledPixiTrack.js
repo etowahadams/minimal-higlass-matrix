@@ -510,15 +510,15 @@ export class TiledPixiTrack extends PixiTrack {
 
     toRemoveIds.forEach((x) => {
       const tileIdStr = x;
-      // this.destroyTile(this.fetchedTiles[tileIdStr]);
-      if (tileIdStr in this.fetchedTiles) {
-        this.fetchedTiles[tileIdStr].graphics.clear();
-        this.pMain.removeChild(this.fetchedTiles[tileIdStr].graphics);
-        this.fetchedTiles[tileIdStr].graphics.destroy({ children: true });
-        delete this.fetchedTiles[tileIdStr];
+      this.destroyTile(this.fetchedTiles[tileIdStr]);
+
+      if (tileIdStr in this.tileGraphics) {
+        this.pMain.removeChild(this.tileGraphics[tileIdStr]);
+        delete this.tileGraphics[tileIdStr];
       }
+
+      delete this.fetchedTiles[tileIdStr];
     });
-    console.warn("removed", toRemoveIds);
 
     this.synchronizeTilesAndGraphics();
     this.draw();
@@ -643,14 +643,20 @@ export class TiledPixiTrack extends PixiTrack {
     /**
      * Add graphics for tiles that have no graphics
      */
+    const fetchedTileIDs = Object.keys(this.fetchedTiles);
     this.renderVersion += 1;
 
-    for (const tileID in this.fetchedTiles) {
-      if (!Object.hasOwn(this.fetchedTiles[tileID], "graphics")) {
+    for (let i = 0; i < fetchedTileIDs.length; i++) {
+      if (!(fetchedTileIDs[i] in this.tileGraphics)) {
+        // console.trace('adding:', fetchedTileIDs[i]);
+
         const newGraphics = new GLOBALS.PIXI.Graphics();
         this.pMain.addChild(newGraphics);
-        this.fetchedTiles[tileID].graphics = newGraphics;
-        this.initTile(this.fetchedTiles[tileID]);
+
+        this.fetchedTiles[fetchedTileIDs[i]].graphics = newGraphics;
+        this.initTile(this.fetchedTiles[fetchedTileIDs[i]]);
+
+        this.tileGraphics[fetchedTileIDs[i]] = newGraphics;
       }
     }
   }

@@ -45,7 +45,9 @@ export class BigWigDataFetcher {
   tilesetInfoLoading?: boolean;
   config = {
     type: "bigwig",
+    cache: false, // whether to cache the data after fetching it
   };
+  cachedTiles: Record<string, Tile> = {};
 
   constructor(dataConfig: BigWigDataConfig) {
     this.dataConfig = dataConfig;
@@ -154,6 +156,15 @@ export class BigWigDataFetcher {
     const validTileIds: string[] = [];
     const tilePromises = [];
 
+    // If the tile is already cached, return it immediately
+    if (tileIds.every((tileId) => this.cachedTiles[tileId])) {
+      tileIds.forEach((tileId) => {
+        tiles[tileId] = this.cachedTiles[tileId];
+      });
+      receivedTiles(tiles);
+      return tiles;
+    }
+    // Otherwise, fetch the tile and cache it
     for (const tileId of tileIds) {
       const parts = tileId.split(".");
       const z = parseInt(parts[0], 10);
@@ -173,6 +184,8 @@ export class BigWigDataFetcher {
         const validTileId = validTileIds[i];
         tiles[validTileId] = values[i];
         tiles[validTileId].tilePositionId = validTileId;
+        // Cache the tile
+        if (this.config.cache) this.cachedTiles[validTileId] = values[i];
       }
 
       receivedTiles(tiles);
@@ -229,16 +242,8 @@ export class BigWigDataFetcher {
             }).then((values) => {
               values.forEach(
                 (v: Feature & { startAbs?: number; endAbs?: number }) => {
-                  v["startAbs"] = chrToAbs(
-                    chromName,
-                    v.start,
-                    this.chromSizes
-                  );
-                  v["endAbs"] = chrToAbs(
-                    chromName,
-                    v.end,
-                    this.chromSizes
-                  );
+                  v["startAbs"] = chrToAbs(chromName, v.start, this.chromSizes);
+                  v["endAbs"] = chrToAbs(chromName, v.end, this.chromSizes);
                 }
               );
               return values as (Feature & {
@@ -266,11 +271,7 @@ export class BigWigDataFetcher {
                       v.start,
                       this.chromSizes
                     );
-                    v["endAbs"] = chrToAbs(
-                      chromName,
-                      v.end,
-                      this.chromSizes
-                    );
+                    v["endAbs"] = chrToAbs(chromName, v.end, this.chromSizes);
                   }
                 );
                 return values as (Feature & {

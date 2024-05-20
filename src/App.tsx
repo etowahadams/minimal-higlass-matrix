@@ -9,6 +9,7 @@ import { HeatmapClient } from "./heatmap";
 import { GoslingTrack } from "./gosling";
 import { fakePubSub } from "./higlass/tracks/utils";
 import { DataFetcher } from "@higlass/datafetchers";
+import { addCorces } from "./examples/corces";
 
 function addScatterplots(pixiManager: PixiManager) {
   const xDom1 = signal([0, 1]);
@@ -407,8 +408,9 @@ function App() {
     const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
 
     // addHeatmap(pixiManager);
-    addGoslingPointTracks(pixiManager);
+    // addGoslingPointTracks(pixiManager);
     // addScatterplots(pixiManager);
+    addCorces(pixiManager);
   }, []);
 
   return (

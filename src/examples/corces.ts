@@ -1,7 +1,9 @@
-import { PixiManager } from "src/pixi-manager";
-import { GoslingTrack } from "src/gosling";
+import { PixiManager } from "../pixi-manager";
+import { GoslingTrack } from "../gosling";
 import { signal } from "@preact/signals-core";
 import { BigWigDataFetcher } from "@gosling-lang/datafetchers";
+import { DataFetcher } from "@higlass/datafetchers";
+import { fakePubSub } from "../higlass/tracks/utils";
 
 // bigwig datafetcher
 // bar mark
@@ -9,7 +11,7 @@ import { BigWigDataFetcher } from "@gosling-lang/datafetchers";
 const excitatory_neurons = {
   id: "3486b662-d79a-4c14-936b-b62d2d0e9205",
   siblingIds: ["3486b662-d79a-4c14-936b-b62d2d0e9205"],
-  showMousePosition: true,
+  showMousePosition: false,
   mousePositionColor: "#000000",
   name: "Excitatory neurons",
   labelPosition: "topLeft",
@@ -312,23 +314,477 @@ const excitatory_neurons = {
   },
 };
 
+const gene_annotation = {
+  id: "24feadcc-7b65-43a7-a45c-2df65405ec8c",
+  siblingIds: ["24feadcc-7b65-43a7-a45c-2df65405ec8c"],
+  showMousePosition: false,
+  mousePositionColor: "#000000",
+  name: "Genes",
+  labelPosition: "topLeft",
+  labelShowResolution: false,
+  labelColor: "black",
+  labelBackgroundColor: "white",
+  labelBackgroundOpacity: 0.5,
+  labelTextOpacity: 1,
+  labelLeftMargin: 1,
+  labelTopMargin: 1,
+  labelRightMargin: 0,
+  labelBottomMargin: 0,
+  backgroundColor: "transparent",
+  spec: {
+    title: "Genes",
+    data: {
+      url: "https://server.gosling-lang.org/api/v1/tileset_info/?d=gene-annotation",
+      type: "beddb",
+      genomicFields: [
+        { index: 1, name: "start" },
+        { index: 2, name: "end" },
+      ],
+      valueFields: [
+        { index: 5, name: "strand", type: "nominal" },
+        { index: 3, name: "name", type: "nominal" },
+      ],
+      exonIntervalFields: [
+        { index: 12, name: "start" },
+        { index: 13, name: "end" },
+      ],
+    },
+    style: { outline: "#20102F" },
+    row: {
+      field: "strand",
+      type: "nominal",
+      domain: ["+", "-"],
+    },
+    color: {
+      field: "strand",
+      type: "nominal",
+      domain: ["+", "-"],
+      range: ["#012DB8", "#BE1E2C"],
+    },
+    visibility: [
+      {
+        operation: "less-than",
+        measure: "width",
+        threshold: "|xe-x|",
+        transitionPadding: 10,
+        target: "mark",
+      },
+    ],
+    width: 400,
+    height: 110,
+    _overlay: [
+      {
+        dataTransform: [
+          {
+            type: "filter",
+            field: "type",
+            oneOf: ["gene"],
+          },
+          { type: "filter", field: "strand", oneOf: ["+"] },
+        ],
+        mark: "text",
+        text: { field: "name", type: "nominal" },
+        x: {
+          field: "start",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        size: { value: 8 },
+        xe: { field: "end", type: "genomic" },
+        style: {
+          outline: "#20102F",
+          textFontSize: 8,
+          dy: -12,
+        },
+      },
+      {
+        dataTransform: [
+          {
+            type: "filter",
+            field: "type",
+            oneOf: ["gene"],
+          },
+          { type: "filter", field: "strand", oneOf: ["-"] },
+        ],
+        mark: "text",
+        text: { field: "name", type: "nominal" },
+        x: {
+          field: "start",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        xe: { field: "end", type: "genomic" },
+        size: { value: 8 },
+        style: {
+          outline: "#20102F",
+          textFontSize: 8,
+          dy: 10,
+        },
+      },
+      {
+        dataTransform: [
+          {
+            type: "filter",
+            field: "type",
+            oneOf: ["gene"],
+          },
+          { type: "filter", field: "strand", oneOf: ["+"] },
+        ],
+        mark: "rect",
+        x: {
+          field: "end",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        size: { value: 7 },
+        style: { outline: "#20102F" },
+      },
+      {
+        dataTransform: [
+          {
+            type: "filter",
+            field: "type",
+            oneOf: ["gene"],
+          },
+          { type: "filter", field: "strand", oneOf: ["-"] },
+        ],
+        mark: "rect",
+        x: {
+          field: "start",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        size: { value: 7 },
+        style: { outline: "#20102F" },
+      },
+      {
+        dataTransform: [{ type: "filter", field: "type", oneOf: ["exon"] }],
+        mark: "rect",
+        x: {
+          field: "start",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        xe: { field: "end", type: "genomic" },
+        size: { value: 14 },
+        style: { outline: "#20102F" },
+      },
+      {
+        dataTransform: [{ type: "filter", field: "type", oneOf: ["gene"] }],
+        mark: "rule",
+        x: {
+          field: "start",
+          type: "genomic",
+          domain: {
+            chromosome: "chr3",
+            interval: [52168000, 52890000],
+          },
+          axis: "top",
+        },
+        xe: { field: "end", type: "genomic" },
+        strokeWidth: { value: 3 },
+        style: { outline: "#20102F" },
+      },
+    ],
+    id: "24feadcc-7b65-43a7-a45c-2df65405ec8c",
+    assembly: "hg38",
+    layout: "linear",
+    orientation: "horizontal",
+    static: false,
+    zoomLimits: [1, null],
+    overlayOnPreviousTrack: false,
+  },
+  theme: {
+    base: "light",
+    root: {
+      background: "white",
+      titleColor: "black",
+      titleBackgroundColor: "transparent",
+      titleFontSize: 18,
+      titleFontFamily: "Arial",
+      titleAlign: "left",
+      titleFontWeight: "bold",
+      subtitleColor: "gray",
+      subtitleBackgroundColor: "transparent",
+      subtitleFontSize: 16,
+      subtitleFontFamily: "Arial",
+      subtitleFontWeight: "normal",
+      subtitleAlign: "left",
+      showMousePosition: true,
+      mousePositionColor: "#000000",
+    },
+    track: {
+      background: "transparent",
+      alternatingBackground: "transparent",
+      titleColor: "black",
+      titleBackground: "white",
+      titleFontSize: 24,
+      titleAlign: "left",
+      outline: "black",
+      outlineWidth: 1,
+    },
+    legend: {
+      position: "top",
+      background: "white",
+      backgroundOpacity: 0.7,
+      labelColor: "black",
+      labelFontSize: 12,
+      labelFontWeight: "normal",
+      labelFontFamily: "Arial",
+      backgroundStroke: "#DBDBDB",
+      tickColor: "black",
+    },
+    axis: {
+      tickColor: "black",
+      labelColor: "black",
+      labelMargin: 5,
+      labelExcludeChrPrefix: false,
+      labelFontSize: 12,
+      labelFontWeight: "normal",
+      labelFontFamily: "Arial",
+      baselineColor: "black",
+      gridColor: "#E3E3E3",
+      gridStrokeWidth: 1,
+      gridStrokeType: "solid",
+      gridStrokeDash: [4, 4],
+    },
+    markCommon: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    point: {
+      color: "#E79F00",
+      size: 3,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    rect: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    triangle: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    area: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    line: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    bar: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    rule: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 1,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    link: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 1,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+    text: {
+      color: "#E79F00",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 0,
+      opacity: 1,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+      textAnchor: "middle",
+      textFontWeight: "normal",
+    },
+    brush: {
+      color: "gray",
+      size: 1,
+      stroke: "black",
+      strokeWidth: 1,
+      opacity: 0.3,
+      nominalColorRange: [
+        "#E79F00",
+        "#029F73",
+        "#0072B2",
+        "#CB7AA7",
+        "#D45E00",
+        "#57B4E9",
+        "#EFE441",
+      ],
+      quantitativeSizeRange: [2, 6],
+    },
+  },
+};
+
 export function addCorces(pixiManager: PixiManager) {
   const xDomGenomic = signal([0, 3088269832]);
-  const dataconfig = {
-    url: "https://s3.amazonaws.com/gosling-lang.org/data/ExcitatoryNeurons-insertions_bin100_RIPnorm.bw",
-    type: "bigwig",
-    column: "position",
-    value: "peak",
-    assembly: "hg38",
-  };
-  
-  const dataFetcher = new BigWigDataFetcher(dataconfig);
 
-  const pos = { x: 10, y: 400, width: 800, height: 50 };
+  // const dataFetcher = new BigWigDataFetcher(excitatory_neurons.spec.data);
+  // const pos = { x: 10, y: 400, width: 800, height: 50 };
+  // new GoslingTrack(
+  //   excitatory_neurons,
+  //   xDomGenomic,
+  //   dataFetcher,
+  //   pixiManager.makeContainer(pos)
+  // );
+
+  const dataconfig = {
+    server: "https://server.gosling-lang.org/api/v1",
+    tilesetUid: "gene-annotation",
+    cacheTiles: true, // New option
+  };
+
+  const geneDataFetcher = new DataFetcher(dataconfig, fakePubSub)
+
+  const pos2 = { x: 10, y: 400 + 60, width: 800, height: 50 };
   new GoslingTrack(
-    excitatory_neurons,
+    gene_annotation,
     xDomGenomic,
-    dataFetcher,
-    pixiManager.makeContainer(pos)
+    geneDataFetcher,
+    pixiManager.makeContainer(pos2)
   );
 }

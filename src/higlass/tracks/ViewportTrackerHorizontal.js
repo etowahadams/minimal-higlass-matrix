@@ -3,7 +3,7 @@ import {uuid} from './utils';
 
 import SVGTrack from './SVGTrack';
 
-class ViewportTrackerHorizontal extends SVGTrack {
+export class ViewportTrackerHorizontal extends SVGTrack {
   constructor(context, options) {
     // create a clipped SVG Path
     super(context, options);

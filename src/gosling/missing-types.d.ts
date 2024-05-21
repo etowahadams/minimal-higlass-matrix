@@ -579,6 +579,35 @@ declare module '@higlass/tracks' {
         constructor(context: Context<unknown, Options>, options: Options);
     }
 
+    interface ViewportTrackerHorizontalContext {
+        // Used in Track
+        id: string;
+        pubSub: PubSub;
+        getTheme: () => unknown;
+        // Used in SVGTrack
+        svgElement: SVGElement;
+        // Used in ViewportTrackerHorizontal
+        registerViewportChanged: (uid: string, callback: (viewportXScale: ScaleLinear<number, number>, viewportYScale: ScaleLinear<number, number>) => void) => void;
+        removeViewportChanged: (uid: string) => void;
+        setDomainsCallback: (xDomain: [number, number], yDomain: [number, number]) => void;
+        projectionXDomain: [number, number]; // The domain of the brush
+    }
+
+    interface ViewportTrackerHorizontalOptions {
+        projectionFillColor: string;
+        projectionStrokeColor: string;
+        projectionFillOpacity: number;
+        projectionStrokeOpacity: number;
+        strokeWidth: number;
+    }
+
+    export class ViewportTrackerHorizontal<Options> extends SVGTrack<Options> {
+        options: Options & ViewportTrackerHorizontalOptions;
+        context: ViewportTrackerHorizontalContext;
+        
+        constructor(context: ViewportTrackerHorizontalContext, options: Options & ViewportTrackerHorizontalOptions);
+    }
+
     /* eslint-disable-next-line @typescript-eslint/ban-types */
     type LiteralUnion<T, U = string> = T | (U & {});
 

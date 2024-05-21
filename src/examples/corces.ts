@@ -4,11 +4,10 @@ import { signal } from "@preact/signals-core";
 import { BigWigDataFetcher } from "@gosling-lang/datafetchers";
 import { DataFetcher } from "@higlass/datafetchers";
 import { fakePubSub } from "../higlass/tracks/utils";
-import { gene_annotation, bigwigTracks, placTracks } from "./corces-tracks";
+import { gene_annotation, bigwigTracks, placTracks, ideogram } from "./corces-tracks";
 
 export function addCorces(pixiManager: PixiManager) {
   const xDomGenomic = signal([543317951, 544039951]);
-
   bigwigTracks.forEach((bigwigTrackOptions, i) => {
     const dataFetcher = new BigWigDataFetcher(bigwigTrackOptions.spec.data);
     // dataFetcher.config.cache = true; // turn on caching 

@@ -5,6 +5,7 @@ import { BigWigDataFetcher, CsvDataFetcherClass } from "@gosling-lang/datafetche
 import { DataFetcher } from "@higlass/datafetchers";
 import { fakePubSub } from "../higlass/tracks/utils";
 import { gene_annotation, bigwigTracks, placTracks, ideogram } from "./corces-tracks";
+import { ViewportTrackerHorizontalTrack } from "../viewport-tracker-horizontal";
 
 export function addCorces(pixiManager: PixiManager) {
   const ideogramDomain = signal([491149952, 689445510])
@@ -17,6 +18,15 @@ export function addCorces(pixiManager: PixiManager) {
     CsvDataFetcher,
     pixiManager.makeContainer(pos0)
   );
+
+  const options = {
+    "projectionFillColor": "red",
+    "projectionStrokeColor": "red",
+    "projectionFillOpacity": 0.3,
+    "projectionStrokeOpacity": 0.3,
+    "strokeWidth": 1
+  }
+  new ViewportTrackerHorizontalTrack(options, ideogramDomain, pixiManager.makeContainer(pos0));
 
   // BigWig tracks
   const xDomGenomic = signal([543317951, 544039951]);

@@ -112,7 +112,7 @@ export function addCorces(pixiManager: PixiManager) {
     x: 10,
     y: pos2.y + pos2.height,
     width: 400,
-    height: 70,
+    height: 90,
   };
   placTracks.forEach((placTrackOptions) => {
     new GoslingTrack(

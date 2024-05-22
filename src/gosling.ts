@@ -12,25 +12,7 @@ import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect } from "@preact/signals-core";
 import { DataFetcher } from '@higlass/datafetchers'
-
-// type HeatmapTrackContext = TiledPixiTrackContext & {
-//   svgElement: HTMLElement;
-//   onTrackOptionsChanged: () => void;
-//   onMouseMoveZoom?: (event: any) => void;
-//   isShowGlobalMousePosition?: () => boolean; // only used when options.showMousePosition is true
-//   isValueScaleLocked: () => boolean;
-// };
-
-// Default d3 zoom feels slow so we use this instead
-// https://d3js.org/d3-zoom#zoom_wheelDelta
-function wheelDelta(event: WheelEvent) {
-  const defaultMultiplier = 5;
-  return (
-    -event.deltaY *
-    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-    (event.ctrlKey ? 10 : defaultMultiplier)
-  );
-}
+import { zoomWheelBehavior } from './utils'
 
 export class GoslingTrack extends GoslingTrackClass {
   xDomain: Signal<number[]>;
@@ -102,7 +84,7 @@ export class GoslingTrack extends GoslingTrackClass {
 
     // Create the zoom behavior
     const zoomBehavior = zoom<HTMLElement, unknown>()
-      .wheelDelta(wheelDelta)
+      .wheelDelta(zoomWheelBehavior)
       // @ts-expect-error We need to reset the transform when the user stops zooming
       .on("end", () => (this.#element.__zoom = new ZoomTransform(1, 0, 0)))
       .on("start", () => {

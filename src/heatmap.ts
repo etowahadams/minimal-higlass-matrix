@@ -9,6 +9,7 @@ import { scaleLinear } from "d3-scale";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
+import { zoomWheelBehavior } from './utils'
 
 type HeatmapTrackContext = TiledPixiTrackContext & {
   svgElement: HTMLElement;
@@ -37,17 +38,6 @@ type HeatmapTrackOptions = TiledPixiTrackOptions & {
   selectRowsAggregationWithRelativeHeight?: unknown;
   selectRowsAggregationMethod?: unknown;
 };
-
-// Default d3 zoom feels slow so we use this instead
-// https://d3js.org/d3-zoom#zoom_wheelDelta
-function wheelDelta(event: WheelEvent) {
-  const defaultMultiplier = 5;
-  return (
-    -event.deltaY *
-    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-    (event.ctrlKey ? 10 : defaultMultiplier)
-  );
-}
 
 export class HeatmapClient extends HeatmapTiledPixiTrack {
   constructor(
@@ -97,7 +87,7 @@ export class HeatmapClient extends HeatmapTiledPixiTrack {
 
     // Attach zoom behavior to the canvas.
     const zoomBehavior = zoom<HTMLElement, unknown>()
-      .wheelDelta(wheelDelta)
+      .wheelDelta(zoomWheelBehavior)
       .on("zoom", this.handleZoom.bind(this));
     select<HTMLElement, unknown>(overlayDiv).call(zoomBehavior);
   }

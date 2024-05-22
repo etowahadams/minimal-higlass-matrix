@@ -7,7 +7,7 @@ import { signal, effect, type Signal } from "@preact/signals-core";
 // temporary fix https://stackoverflow.com/a/54020925
 // @types/d3-select does not have the right version of d3-transition
 import { transition as d3Transition } from "d3-transition";
-import { Data } from "./utils";
+import { Data, zoomWheelBehavior} from "./utils";
 select.prototype.transition = d3Transition;
 
 const generateCircleTexture = (
@@ -32,17 +32,6 @@ const generateCircleTexture = (
 
   return renderTexture;
 };
-
-// Default d3 zoom feels slow so we use this instead
-// https://d3js.org/d3-zoom#zoom_wheelDelta
-function wheelDelta(event: WheelEvent) {
-  const defaultMultiplier = 4;
-  return (
-    -event.deltaY *
-    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-    (event.ctrlKey ? 10 : defaultMultiplier)
-  );
-}
 
 /**
  * Helper function to create a masked container
@@ -158,7 +147,7 @@ export class Scatterplot {
 
     // Attach zoom behavior to the canvas.
     const zoomBehavior = zoom<HTMLElement, unknown>()
-      .wheelDelta(wheelDelta)
+      .wheelDelta(zoomWheelBehavior)
       // @ts-expect-error We need to reset the transform when the user stops zooming
       .on("end", () => (this.#element.__zoom = new ZoomTransform(1, 0, 0)))
       .on("start", () => {

@@ -23,9 +23,9 @@ function wheelDelta(event: WheelEvent) {
 }
 
 export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<ViewportTrackerHorizontalOptions> {
-  xDomain: Signal<number[]>;
-  zoomStartScale = scaleLinear();
-  #element: HTMLElement;
+  xDomain: Signal<number[]>;  
+  zoomStartScale = scaleLinear(); // This is the scale that we use to store the domain when the user starts zooming
+  #element: HTMLElement; // This is the div that we're going to apply the zoom behavior to
 
   constructor(
     options: ViewportTrackerHorizontalOptions,
@@ -38,13 +38,14 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     const { pixiContainer, overlayDiv } = containers;
     const height = overlayDiv.clientHeight;
     const width = overlayDiv.clientWidth;
-    // The colorbar svg element isn't quite working yet
+    // Create a new svg element. The brush will be drawn on this element
     const svgElement = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "svg"
     );
     svgElement.style.width = width + "px";
     svgElement.style.height = height + "px";
+    // Add it to the overlay div
     overlayDiv.appendChild(svgElement);
 
     // Setup the context object
@@ -83,17 +84,12 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     // Set the scales
     this.zoomed(refXScale, refYScale);
     this.refScalesChanged(refXScale, refYScale);
+    // Draw and add the zoom behavior
     this.draw();
-
-    // Add the zoom
     this.#addZoom();
   }
 
   #addZoom(): void {
-    const baseScale = scaleLinear()
-      .domain(this.xDomain.value)
-      .range([0, this.#element.clientWidth]);
-
     // This function will be called every time the user zooms
     const zoomed = (event: D3ZoomEvent<HTMLElement, unknown>) => {
       const newXDomain = event.transform.rescaleX(this.zoomStartScale).domain();
@@ -125,6 +121,10 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     // Apply the zoom behavior to the overlay div
     select<HTMLElement, unknown>(this.#element).call(zoomBehavior);
 
+    // This scale will always have the same range, but the domain will change in the effect
+    const baseScale = scaleLinear()
+      .domain(this.xDomain.value)
+      .range([0, this.#element.clientWidth]);
     // Every time the domain gets changed we want to update the zoom
     effect(() => {
       const newScale = baseScale.domain(this.xDomain.value);

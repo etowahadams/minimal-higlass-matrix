@@ -1,47 +1,11 @@
 import * as PIXI from "pixi.js";
-import { Scatterplot } from "./scatterplot";
-import { zoom, D3ZoomEvent } from "d3-zoom";
-import { select } from "d3-selection";
-import { Data } from "./utils";
-// import { PixiClient } from "./pixi-client";
-// import { TiledPixiClient } from "./tiled-pixi-client";
-import { HeatmapClient } from "./heatmap";
-import { type Signal } from "@preact/signals-core";
-import { ScaleLinear } from "d3-scale";
 
-// Default d3 zoom feels slow so we use this instead
-// https://d3js.org/d3-zoom#zoom_wheelDelta
-function wheelDelta(event: WheelEvent) {
-  const defaultMultiplier = 5;
-  return (
-    -event.deltaY *
-    (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) *
-    (event.ctrlKey ? 10 : defaultMultiplier)
-  );
-}
-
-export function createOverlayElement(position: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}): HTMLDivElement {
-  const overlay = document.createElement("div");
-
-  overlay.style.position = "absolute";
-  overlay.style.left = `${position.x}px`;
-  overlay.style.top = `${position.y}px`;
-  overlay.style.width = `${position.width}px`;
-  overlay.style.height = `${position.height}px`;
-  overlay.id = `overlay-${Math.random().toString(36).substring(7)}`; // Add random id
-
-  return overlay;
-}
-
+/**
+ * A wrapper class for PIXI.Application
+ */
 export class PixiManager {
   app: PIXI.Application<HTMLCanvasElement>;
-  private plots: Scatterplot[] = [];
-  private containerElement: HTMLDivElement;
+  containerElement: HTMLDivElement;
 
   constructor(
     width: number,
@@ -52,25 +16,31 @@ export class PixiManager {
     this.app = new PIXI.Application<HTMLCanvasElement>({
       width,
       height,
-      antialias: true,
+      antialias: false, // When this is true, rendering is slower
       view: document.createElement("canvas"),
       backgroundColor: 0xffffff,
       eventMode: "static",
       eventFeatures: {
         move: false,
         globalMove: false,
-        click: true,
+        click: false,
         wheel: false,
       },
     });
+
     this.containerElement = container;
     container.appendChild(this.app.view);
-
+    // Add FPS counter
     this.app.ticker.add(() => {
       fps(this.app.ticker.FPS);
     });
   }
 
+  /**
+   * Returns a PIXI container and an overlay div for a given position
+   * @param position 
+   * @returns 
+   */
   makeContainer(position: {
     x: number;
     y: number;
@@ -87,23 +57,30 @@ export class PixiManager {
     return { pixiContainer: pContainer, overlayDiv: plotDiv };
   }
 
-  public addHeatmap(position: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }): void {
-    const pContainer = new PIXI.Container();
-    this.app.stage.addChild(pContainer);
-
-    new HeatmapClient(pContainer, this.containerElement, position, {
-      trackBorderWidth: 1,
-      trackBorderColor: "black",
-      colorbarPosition: "topRight",
-    });
-  }
-
-  public destroy(): void {
+  destroy(): void {
     this.app.destroy();
   }
+}
+
+/**
+ * Creates an absolute positioned div element
+ * @param position 
+ * @returns 
+ */
+export function createOverlayElement(position: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): HTMLDivElement {
+  const overlay = document.createElement("div");
+
+  overlay.style.position = "absolute";
+  overlay.style.left = `${position.x}px`;
+  overlay.style.top = `${position.y}px`;
+  overlay.style.width = `${position.width}px`;
+  overlay.style.height = `${position.height}px`;
+  overlay.id = `overlay-${Math.random().toString(36).substring(7)}`; // Add random id
+
+  return overlay;
 }

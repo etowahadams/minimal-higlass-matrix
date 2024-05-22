@@ -1,16 +1,16 @@
 import { signal } from "@preact/signals-core";
-import { PixiManager } from "../pixi-manager";
+import { PixiManager } from "../../pixi-manager";
 // Import Tracks
-import { GoslingTrack } from "../gosling";
-import { AxisTrack } from "../axis";
-import { ViewportTrackerHorizontalTrack } from "../viewport-tracker-horizontal";
+import { GoslingTrack } from "../../gosling";
+import { AxisTrack } from "../../axis";
+import { ViewportTrackerHorizontalTrack } from "../../viewport-tracker-horizontal";
 // Import DataFetchers
 import {
   BigWigDataFetcher,
   CsvDataFetcherClass,
 } from "@gosling-lang/datafetchers";
 import { DataFetcher } from "@higlass/datafetchers";
-import { fakePubSub } from "../higlass/tracks/utils";
+import { fakePubSub } from "../../higlass/tracks/utils";
 // Import Track specs
 import {
   gene_annotation,
@@ -112,7 +112,7 @@ export function addCorces(pixiManager: PixiManager) {
     x: 10,
     y: pos2.y + pos2.height,
     width: 400,
-    height: 110,
+    height: 70,
   };
   placTracks.forEach((placTrackOptions) => {
     new GoslingTrack(

@@ -39,7 +39,7 @@ type HeatmapTrackOptions = TiledPixiTrackOptions & {
   selectRowsAggregationMethod?: unknown;
 };
 
-export class HeatmapClient extends HeatmapTiledPixiTrack {
+export class HeatmapTrack extends HeatmapTiledPixiTrack<HeatmapTrackOptions> {
   constructor(
     pixiContainer: PIXI.Container,
     overlayDiv: HTMLElement,

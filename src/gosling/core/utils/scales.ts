@@ -1,4 +1,4 @@
-import type { GoslingTrackModel } from '../../gosling-track-model';
+import type { GoslingTrackModel } from '../../tracks/gosling-track/gosling-track-model';
 import type { Assembly, Domain } from "@gosling-lang/gosling-schema";
 import { SUPPORTED_CHANNELS } from '../mark';
 import { IsDomainChr, IsDomainInterval, IsDomainChrInterval, IsChannelDeep } from '@gosling-lang/gosling-schema';

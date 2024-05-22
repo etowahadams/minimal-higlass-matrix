@@ -1,7 +1,7 @@
 import { globalPubSub } from 'pub-sub-es';
 
 // Configs
-import { GLOBALS } from './configs';
+import { GLOBALS } from '../configs';
 
 /**
  * Convert a HEX string into a HEX integer.

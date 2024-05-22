@@ -1,3 +1,1 @@
-import AxisTrack from './axis-track';
-
-export { AxisTrack };
+export { AxisTrackClass } from "./axis-track";

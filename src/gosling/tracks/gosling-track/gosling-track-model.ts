@@ -22,14 +22,14 @@ import {
 import { interpolateViridis } from 'd3-scale-chromatic';
 import { min as d3min, max as d3max, sum as d3sum, group } from 'd3-array';
 import { HIGLASS_AXIS_SIZE } from './gosling-track';
-import { SUPPORTED_CHANNELS } from './core/mark';
-import type { PIXIVisualProperty } from './core/visual-property.schema';
-import { rectProperty } from './core/mark/rect';
-import { pointProperty } from './core/mark/point';
-import { barProperty } from './core/mark/bar';
-import { getNumericDomain } from './core/utils/scales';
-import { logicalComparison } from './core/utils/semantic-zoom';
-import { aggregateData } from './core/utils/data-transform';
+import { SUPPORTED_CHANNELS } from '../../core/mark';
+import type { PIXIVisualProperty } from '../../core/visual-property.schema';
+import { rectProperty } from '../../core/mark/rect';
+import { pointProperty } from '../../core/mark/point';
+import { barProperty } from '../../core/mark/bar';
+import { getNumericDomain } from '../../core/utils/scales';
+import { logicalComparison } from '../../core/utils/semantic-zoom';
+import { aggregateData } from '../../core/utils/data-transform';
 import {
     IsChannelDeep,
     IsChannelValue,
@@ -39,10 +39,10 @@ import {
     PREDEFINED_COLOR_STR_MAP,
     IsRangeArray
 } from '@gosling-lang/gosling-schema';
-import { CHANNEL_DEFAULTS } from './core/channel';
-import { type CompleteThemeDeep, getTheme } from './core/utils/theme';
-import { uuid } from './core/utils/uuid';
-import { MouseEventModel } from './mouse-event';
+import { CHANNEL_DEFAULTS } from '../../core/channel';
+import { type CompleteThemeDeep, getTheme } from '../../core/utils/theme';
+import { uuid } from '../../core/utils/uuid';
+import { MouseEventModel } from '../../mouse-event';
 
 export type ScaleType =
     | ScaleLinear<any, any>

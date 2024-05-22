@@ -1,6 +1,6 @@
-import type { Tile } from '@gosling-lang/gosling-track';
+import type { Tile } from '@gosling-lang/tracks/gosling-track/gosling-track';
 import type { Channel } from '@gosling-lang/gosling-schema';
-import type { GoslingTrackModel } from '@gosling-lang/gosling-track-model';
+import type { GoslingTrackModel } from '@gosling-lang/tracks/gosling-track/gosling-track-model';
 import { group } from 'd3-array';
 import { getValueUsingChannel, IsStackedMark } from '@gosling-lang/gosling-schema';
 import { cartesianToPolar } from '../utils/polar';

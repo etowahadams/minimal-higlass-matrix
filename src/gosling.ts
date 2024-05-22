@@ -2,7 +2,7 @@ import {
   GoslingTrackClass,
   GoslingTrackOptions,
   GoslingTrackContext,
-} from "./gosling/gosling-track";
+} from "@gosling-lang/tracks/gosling-track";
 import * as PIXI from "pixi.js";
 import { fakePubSub } from "./higlass/tracks/utils";
 import { scaleLinear } from "d3-scale";

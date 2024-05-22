@@ -22,24 +22,24 @@ import {
   hasDataTransform,
 } from "@gosling-lang/gosling-schema";
 
-import { type MouseEventData, isPointInsideDonutSlice } from "./mouse-event";
-import { BamDataFetcher } from "./datafetchers/bam";
+import { type MouseEventData, isPointInsideDonutSlice } from "../../mouse-event";
+import { BamDataFetcher } from "../../datafetchers/bam";
 import { type TabularDataFetcher } from "./data-abstraction";
 import type { Tile as _Tile, TileData, TileDataBase } from "@higlass/services";
 import { LinearBrushModel } from "./linear-brush-model";
-import { getTheme } from "./themes";
+import { getTheme } from "../../themes";
 import { getTabularData } from "./data-abstraction";
 
-import type { CompleteThemeDeep } from "./core/utils/theme";
+import type { CompleteThemeDeep } from "../../core/utils/theme";
 import {
   drawMark,
   drawPostEmbellishment,
   drawPreEmbellishment,
-} from "./core/mark";
+} from "../../core/mark";
 import { GoslingTrackModel } from "./gosling-track-model";
-import { shareScaleAcrossTracks } from "./core/utils/scales";
-import { resolveSuperposedTracks } from "./core/utils/overlay";
-import colorToHex from "./core/utils/color-to-hex";
+import { shareScaleAcrossTracks } from "../../core/utils/scales";
+import { resolveSuperposedTracks } from "../../core/utils/overlay";
+import colorToHex from "../../core/utils/color-to-hex";
 import {
   aggregateCoverage,
   calculateData,
@@ -51,13 +51,13 @@ import {
   replaceString,
   splitExon,
   inferSvType,
-} from "./core/utils/data-transform";
-import { publish } from "./pubsub";
-import { getRelativeGenomicPosition } from "./core/utils/assembly";
-import { getTextStyle } from "./core/utils/text-style";
-import { flatArrayToPairArray } from "./core/utils/array";
-import { type TrackConfig } from "./core/utils/define-plugin-track";
-import { uuid } from "./core/utils/uuid";
+} from "../../core/utils/data-transform";
+import { publish } from "../../pubsub";
+import { getRelativeGenomicPosition } from "../../core/utils/assembly";
+import { getTextStyle } from "../../core/utils/text-style";
+import { flatArrayToPairArray } from "../../core/utils/array";
+import { type TrackConfig } from "../../core/utils/define-plugin-track";
+import { uuid } from "../../core/utils/uuid";
 import type { Context, Scale, TilePosition } from "@higlass/tracks";
 
 // Additions
@@ -66,7 +66,7 @@ import { tileProxy } from "@higlass/services";
 import { TiledPixiTrack } from "@higlass/tracks";
 import { select, Selection } from "d3-selection";
 import { format } from "d3-format";
-import { showMousePosition } from "../higlass/tracks/utils";
+import { showMousePosition } from "../../../higlass/tracks/utils";
 import { calculate1DVisibleTiles } from "./utils";
 
 // Set `true` to print in what order each function is called

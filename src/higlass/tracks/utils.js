@@ -427,7 +427,7 @@ const map = (f) => (x) => Array.prototype.map.call(x, f);
  */
 export const objVals = (obj) => map((key) => obj[key])(Object.keys(obj));
 
-export { default as showMousePosition } from '../mouse-position';
+export { default as showMousePosition } from "./mouse-position";
 
 /**
  * Factory function for a value to RGB color converter
@@ -449,9 +449,72 @@ export const valueToColor =
       // (rgbIdx 255)
       rgbIdx = Math.max(
         0,
-        Math.min(255, Math.floor(valueScale(value + pseudoCounts))),
+        Math.min(255, Math.floor(valueScale(value + pseudoCounts)))
       );
     }
 
     return colorScale[rgbIdx];
   };
+
+/**
+ * Export a PIXI text to an SVG element
+ * @param {import('pixi.js').Text} pixiText A PIXI.Text object that we want to create an SVG element for
+ * @returns { HTMLElement } A DOM SVG Element with all of the attributes set as to display the given text.
+ */
+export const pixiTextToSvg = (pixiText) => {
+  const g = document.createElement("g");
+  const t = document.createElement("text");
+
+  if (pixiText.anchor.x === 0) {
+    t.setAttribute("text-anchor", "start");
+  } else if (pixiText.anchor.x === 1) {
+    t.setAttribute("text-anchor", "end");
+  } else {
+    t.setAttribute("text-anchor", "middle");
+  }
+
+  // @ts-expect-error Where this function is invoked in HorizontalChromosomeLabels, pixiText.style.fontFamily is always a string
+  t.setAttribute("font-family", pixiText.style.fontFamily);
+  // @ts-expect-error Where this function is invoked in HorizontalChromosomeLabels, pixiText.style.fontSize is always a string
+  t.setAttribute("font-size", pixiText.style.fontSize);
+  g.setAttribute("transform", `scale(${pixiText.scale.x},1)`);
+  // @ts-expect-error Where this function is invoked in HorizontalChromosomeLabels, pixiText.style.fill is always a string
+  t.setAttribute("fill", pixiText.style.fill);
+  t.innerHTML = pixiText.text;
+
+  g.appendChild(t);
+  g.setAttribute(
+    "transform",
+    `translate(${pixiText.x},${pixiText.y})scale(${pixiText.scale.x},1)`
+  );
+
+  return g;
+};
+
+/**
+ * Generate a SVG line
+ * @param   {number}  x1  Start X
+ * @param   {number}  y1  Start Y
+ * @param   {number}  x2  End X
+ * @param   {number}  y2  End Y
+ * @param   {number}  strokeWidth  Line width
+ * @param   {string}  strokeColor  Color HEX string
+ * @return  {HTMLElement}  SVG line object
+ */
+export const svgLine = (x1, y1, x2, y2, strokeWidth, strokeColor) => {
+  const line = document.createElement('line');
+
+  line.setAttribute('x1', String(x1));
+  line.setAttribute('x2', String(x2));
+  line.setAttribute('y1', String(y1));
+  line.setAttribute('y2', String(y2));
+
+  if (strokeWidth) {
+    line.setAttribute('stroke-width', String(strokeWidth));
+  }
+  if (strokeColor) {
+    line.setAttribute('stroke', strokeColor);
+  }
+
+  return line;
+};

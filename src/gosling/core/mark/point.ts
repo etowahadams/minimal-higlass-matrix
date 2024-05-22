@@ -1,5 +1,5 @@
 import type * as PIXI from 'pixi.js';
-import type { GoslingTrackModel } from '../../gosling-track-model';
+import type { GoslingTrackModel } from '../../tracks/gosling-track/gosling-track-model';
 import type { Channel } from "@gosling-lang/gosling-schema";
 import { getValueUsingChannel } from '@gosling-lang/gosling-schema';
 import colorToHex from '../utils/color-to-hex';

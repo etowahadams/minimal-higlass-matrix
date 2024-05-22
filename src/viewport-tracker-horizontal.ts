@@ -103,6 +103,16 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     // Create the zoom behavior
     const zoomBehavior = zoom<HTMLElement, unknown>()
       .wheelDelta(wheelDelta)
+      .filter((event) => {
+        // We don't want to zoom if the user is dragging a brush
+        const isRect = event.target.tagName === 'rect';
+        const isMousedown = event.type === 'mousedown';
+        const isDraggingBrush = isRect && isMousedown;
+        // Here are the default filters 
+        const defaultFilter = (!event.ctrlKey || event.type === 'wheel') && !event.button
+        // Use the default filter and our custom filter
+        return defaultFilter && !isDraggingBrush;
+      })
       // @ts-expect-error We need to reset the transform when the user stops zooming
       .on("end", () => (this.#element.__zoom = new ZoomTransform(1, 0, 0)))
       .on("start", () => {

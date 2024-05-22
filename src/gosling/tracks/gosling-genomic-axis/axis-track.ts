@@ -20,7 +20,7 @@ const TICK_HEIGHT = 6;
 const TICK_TEXT_SEPARATION = 2;
 const TICK_COLOR = 0x777777;
 
-type AxisTrackOptions = {
+export type AxisTrackOptions = {
   innerRadius: number;
   outerRadius: number;
   startAngle: number;
@@ -62,7 +62,7 @@ type ChromInfo = {
   cumPositions: ChrPosInfo[];
 };
 
-interface AxisTrackContext {
+export interface AxisTrackContext {
     dataConfig: Record<string, unknown>;
     animate: () => void;
     chromInfoPath?: string;

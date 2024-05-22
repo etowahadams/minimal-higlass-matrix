@@ -71,6 +71,9 @@ dependencies:
   pub-sub-es:
     specifier: ^2.1.1
     version: 2.1.1
+  rbush:
+    specifier: ^3.0.1
+    version: 3.0.1
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -112,6 +115,9 @@ devDependencies:
   '@types/lodash-es':
     specifier: ^4.17.12
     version: 4.17.12
+  '@types/rbush':
+    specifier: ^3.0.3
+    version: 3.0.3
   '@types/react':
     specifier: ^18.2.43
     version: 18.2.55
@@ -1277,6 +1283,10 @@ packages:
 
   /@types/prop-types@15.7.11:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
+    dev: true
+
+  /@types/rbush@3.0.3:
+    resolution: {integrity: sha512-lX55lR0iYCgapxD3IrgujpQA1zDxwZI5qMRelKvmKAsSMplFVr7wmMpG7/6+Op2tjrgEex8o3vjg8CRDrRNYxg==}
     dev: true
 
   /@types/react-dom@18.2.19:
@@ -2581,6 +2591,16 @@ packages:
   /quick-lru@4.0.1:
     resolution: {integrity: sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==}
     engines: {node: '>=8'}
+    dev: false
+
+  /quickselect@2.0.0:
+    resolution: {integrity: sha512-RKJ22hX8mHe3Y6wH/N3wCM6BWtjaxIyyUIkpHOvfFnxdI4yD4tBXEBKSbriGujF6jnSVkJrffuo6vxACiSSxIw==}
+    dev: false
+
+  /rbush@3.0.1:
+    resolution: {integrity: sha512-XRaVO0YecOpEuIvbhbpTrZgoiI6xBlz6hnlr6EHhd+0x9ase6EmeN+hdwwUaJvLcsFFQ8iWVF1GAK1yB0BWi0w==}
+    dependencies:
+      quickselect: 2.0.0
     dev: false
 
   /react-dom@18.2.0(react@18.2.0):

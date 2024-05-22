@@ -604,6 +604,7 @@ declare module '@higlass/tracks' {
     export class ViewportTrackerHorizontal<Options> extends SVGTrack<Options> {
         options: Options & ViewportTrackerHorizontalOptions;
         context: ViewportTrackerHorizontalContext;
+        viewportChanged: (viewportXScale: Scale, viewportYScale: Scale) => void;
         
         constructor(context: ViewportTrackerHorizontalContext, options: Options & ViewportTrackerHorizontalOptions);
     }

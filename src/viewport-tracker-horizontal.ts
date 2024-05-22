@@ -3,11 +3,8 @@ import {
   type ViewportTrackerHorizontalContext,
   type ViewportTrackerHorizontalOptions,
 } from "@higlass/tracks";
-import * as PIXI from "pixi.js";
-import { ScaleLinear, scaleLinear } from "d3-scale";
-import { ZoomTransform } from "d3-zoom";
-
-import { D3ZoomEvent, zoom } from "d3-zoom";
+import { scaleLinear } from "d3-scale";
+import { ZoomTransform, type D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect } from "@preact/signals-core";
 
@@ -23,19 +20,17 @@ function wheelDelta(event: WheelEvent) {
 }
 
 export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<ViewportTrackerHorizontalOptions> {
-  xDomain: Signal<number[]>;  
+  xDomain: Signal<number[]>;
+  xBrushDomain: Signal<number[]>;
   zoomStartScale = scaleLinear(); // This is the scale that we use to store the domain when the user starts zooming
   #element: HTMLElement; // This is the div that we're going to apply the zoom behavior to
 
   constructor(
     options: ViewportTrackerHorizontalOptions,
-    xDomain: Signal<number[]>,
-    containers: {
-      pixiContainer: PIXI.Container;
-      overlayDiv: HTMLElement;
-    }
+    xDomain: Signal<[number, number]>,
+    xBrushDomain: Signal<[number, number]>,
+    overlayDiv: HTMLElement
   ) {
-    const { pixiContainer, overlayDiv } = containers;
     const height = overlayDiv.clientHeight;
     const width = overlayDiv.clientWidth;
     // Create a new svg element. The brush will be drawn on this element
@@ -53,27 +48,17 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
       id: "test",
       svgElement: svgElement,
       getTheme: () => "light",
-      registerViewportChanged: (
-        uid: string,
-        callback: (
-          viewportXScale: ScaleLinear<number, number>,
-          viewportYScale: ScaleLinear<number, number>
-        ) => void
-      ) => {
-        console.warn("registerViewportChanged not implemented");
-      },
-      removeViewportChanged: (uid: string) =>
-        console.warn("removeViewportChanged not implemented"),
-      setDomainsCallback: (
-        xDomain: [number, number],
-        yDomain: [number, number]
-      ) => console.warn("setDomainsCallback not implemented", xDomain, yDomain),
-      projectionXDomain: [543317951, 544039951],
+      registerViewportChanged: () => {},
+      removeViewportChanged: () => {},
+      setDomainsCallback: (xDomain: [number, number]) =>
+        (xBrushDomain.value = xDomain),
+      projectionXDomain: xBrushDomain.value,
     };
 
     super(context, options);
 
     this.xDomain = xDomain;
+    this.xBrushDomain = xBrushDomain;
     this.#element = overlayDiv;
     // Now we need to initialize all of the properties that would normally be set by HiGlassComponent
     this.setDimensions([width, height]);
@@ -87,6 +72,12 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     // Draw and add the zoom behavior
     this.draw();
     this.#addZoom();
+
+    // When the brush signal changes, we want to update the brush
+    effect(() => {
+      const newXDomain = scaleLinear().domain(this.xBrushDomain.value);
+      this.viewportChanged(newXDomain, scaleLinear());
+    });
   }
 
   #addZoom(): void {
@@ -101,11 +92,12 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
       .wheelDelta(wheelDelta)
       .filter((event) => {
         // We don't want to zoom if the user is dragging a brush
-        const isRect = event.target.tagName === 'rect';
-        const isMousedown = event.type === 'mousedown';
+        const isRect = event.target.tagName === "rect";
+        const isMousedown = event.type === "mousedown";
         const isDraggingBrush = isRect && isMousedown;
-        // Here are the default filters 
-        const defaultFilter = (!event.ctrlKey || event.type === 'wheel') && !event.button
+        // Here are the default filters
+        const defaultFilter =
+          (!event.ctrlKey || event.type === "wheel") && !event.button;
         // Use the default filter and our custom filter
         return defaultFilter && !isDraggingBrush;
       })

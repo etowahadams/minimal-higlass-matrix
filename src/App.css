@@ -10,12 +10,12 @@
 
 #plot {
   text-align: center;
-  height: 1000px;
   width: 1000px;
   position: relative;
 }
 #plot canvas {
-  outline: 1px solid #646cff;
+  outline: 1px solid #bdbdbd;
+  border-radius: 5px;
 }
 
 .desc {

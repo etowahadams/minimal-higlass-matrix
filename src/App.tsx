@@ -17,7 +17,7 @@ function App() {
     plotElement.innerHTML = "";
 
     // Initialize the PixiManager. This will be used to get containers and overlay divs for the plots
-    const pixiManager = new PixiManager(1000, 1000, plotElement, setFps);
+    const pixiManager = new PixiManager(1000, 600, plotElement, setFps);
 
     // addHeatmap(pixiManager);
     // addGoslingTracks(pixiManager);

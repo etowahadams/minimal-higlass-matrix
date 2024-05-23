@@ -24,6 +24,7 @@ export function addCorces(pixiManager: PixiManager) {
   // Set up the domain signals
   const ideogramDomain = signal<[number, number]>([491149952, 689445510]);
   const view1Domain = signal<[number, number]>([543317951, 544039951]);
+  const cursorPosition = signal<number>(0);
 
   // Ideogram track
   const CsvDataFetcher = new CsvDataFetcherClass(ideogram.spec.data);
@@ -32,7 +33,8 @@ export function addCorces(pixiManager: PixiManager) {
     ideogram,
     ideogramDomain,
     CsvDataFetcher,
-    pixiManager.makeContainer(pos0)
+    pixiManager.makeContainer(pos0),
+    cursorPosition
   );
 
   // Axis track
@@ -73,7 +75,8 @@ export function addCorces(pixiManager: PixiManager) {
       bigwigTrackOptions,
       view1Domain,
       dataFetcher,
-      pixiManager.makeContainer(pos1)
+      pixiManager.makeContainer(pos1),
+      cursorPosition
     );
   });
 
@@ -96,7 +99,8 @@ export function addCorces(pixiManager: PixiManager) {
     gene_annotation,
     view1Domain,
     geneDataFetcher,
-    pixiManager.makeContainer(pos2)
+    pixiManager.makeContainer(pos2),
+    cursorPosition
   );
 
   // PLAC-seq track
@@ -119,7 +123,8 @@ export function addCorces(pixiManager: PixiManager) {
       placTrackOptions,
       view1Domain,
       platDatafetcher,
-      pixiManager.makeContainer(pos3)
+      pixiManager.makeContainer(pos3),
+      cursorPosition
     );
   });
 }

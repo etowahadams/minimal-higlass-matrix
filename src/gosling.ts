@@ -11,8 +11,8 @@ import { ZoomTransform } from "d3-zoom";
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect, signal, computed } from "@preact/signals-core";
-import { DataFetcher } from '@higlass/datafetchers'
-import { zoomWheelBehavior } from './utils'
+import { DataFetcher } from "@higlass/datafetchers";
+import { zoomWheelBehavior } from "./utils";
 
 export class GoslingTrack extends GoslingTrackClass {
   xDomain: Signal<number[]>;
@@ -26,7 +26,8 @@ export class GoslingTrack extends GoslingTrackClass {
     containers: {
       pixiContainer: PIXI.Container;
       overlayDiv: HTMLElement;
-    }
+    },
+    cursorPos?: Signal<number>
   ) {
     const { pixiContainer, overlayDiv } = containers;
     const height = overlayDiv.clientHeight;
@@ -69,45 +70,44 @@ export class GoslingTrack extends GoslingTrackClass {
     this.zoomed(refXScale, refYScale);
     this.refScalesChanged(refXScale, refYScale);
 
-    
     // Add the zoom
     this.#addZoom();
-    // Add the cursor
-    this.#addCursor();
+    // Add the cursor. Note we are currently ignoring the showMousePosition option
+    if (cursorPos) this.#addCursor(cursorPos);
   }
 
-  #addCursor() {
-    const startPos = 543428951;
-    const pixelPos = this._refXScale(startPos);
-    console.warn(this._refXScale.domain(), this._refXScale.range())
-    console.warn("pixelPos", pixelPos)
+  #addCursor(cursorPos: Signal<number>): void {
     const cursor = new PIXI.Graphics();
     cursor.lineStyle(1, "black", 1);
     cursor.moveTo(0, 0);
     cursor.lineTo(0, this.#element.clientHeight);
     this.pMain.addChild(cursor);
-    const cursorPos = signal<number>(543428951);
 
+    // This function will be called every time the user moves the mouse
     function moveCursor(event: MouseEvent) {
-      // Convert event.offsetX to genomic position
-      const baseScale = scaleLinear().range([0, this.#element.clientWidth]);
-      const newScale = baseScale.domain(this.xDomain.value);
+      // Move the cursor to the mouse position
+      cursor.position.x = event.offsetX;
+      // Calculate the genomic position of the cursor
+      const newScale = this._refXScale.domain(this.xDomain.value);
       const genomicPos = newScale.invert(event.offsetX);
       cursorPos.value = genomicPos;
-      cursor.position.x = event.offsetX;
     }
-
     this.#element.addEventListener("mousemove", moveCursor.bind(this));
+    this.#element.addEventListener("mouseleave", () => {
+      cursorPos.value = 0;
+    });
 
+    // Every time the domain gets changed we want to update the cursor
     effect(() => {
-      const baseScale = scaleLinear().range([0, this.#element.clientWidth]);
-      const newScale = baseScale.domain(this.xDomain.value);
+      const newScale = this._refXScale.domain(this.xDomain.value);
       cursor.position.x = newScale(cursorPos.value);
     });
   }
 
   #addZoom(): void {
-    const baseScale = scaleLinear().domain(this.xDomain.value).range([0, this.#element.clientWidth]);
+    const baseScale = scaleLinear()
+      .domain(this.xDomain.value)
+      .range([0, this.#element.clientWidth]);
 
     // This function will be called every time the user zooms
     const zoomed = (event: D3ZoomEvent<HTMLElement, unknown>) => {
@@ -121,7 +121,9 @@ export class GoslingTrack extends GoslingTrackClass {
       // @ts-expect-error We need to reset the transform when the user stops zooming
       .on("end", () => (this.#element.__zoom = new ZoomTransform(1, 0, 0)))
       .on("start", () => {
-        this.zoomStartScale.domain(this.xDomain.value).range([0, this.#element.clientWidth]);
+        this.zoomStartScale
+          .domain(this.xDomain.value)
+          .range([0, this.#element.clientWidth]);
       })
       .on("zoom", zoomed.bind(this));
 
@@ -130,7 +132,7 @@ export class GoslingTrack extends GoslingTrackClass {
 
     // Every time the domain gets changed we want to update the zoom
     effect(() => {
-      const newScale = baseScale.domain(this.xDomain.value);
+      const newScale = this._refXScale.domain(this.xDomain.value);
       this.zoomed(newScale, this._refYScale);
     });
   }

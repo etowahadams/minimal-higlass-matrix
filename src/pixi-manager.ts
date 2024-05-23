@@ -17,6 +17,8 @@ export class PixiManager {
       width,
       height,
       antialias: false, // When this is true, rendering is slower
+      resolution: 2, // Higher resolution 
+      autoDensity: true, // When resolution is set, this should be true so things are scaled correctly
       view: document.createElement("canvas"),
       backgroundColor: 0xffffff,
       eventMode: "static",

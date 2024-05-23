@@ -10,7 +10,7 @@ import { ZoomTransform } from "d3-zoom";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
-import { type Signal, effect } from "@preact/signals-core";
+import { type Signal, effect, signal, computed } from "@preact/signals-core";
 import { DataFetcher } from '@higlass/datafetchers'
 import { zoomWheelBehavior } from './utils'
 
@@ -52,6 +52,7 @@ export class GoslingTrack extends GoslingTrackClass {
       pubSub: fakePubSub,
       isValueScaleLocked: () => false,
       svgElement: colorbarDiv,
+      isShowGlobalMousePosition: () => false,
     };
 
     super(context, options);
@@ -71,6 +72,38 @@ export class GoslingTrack extends GoslingTrackClass {
     
     // Add the zoom
     this.#addZoom();
+    // Add the cursor
+    this.#addCursor();
+  }
+
+  #addCursor() {
+    const startPos = 543428951;
+    const pixelPos = this._refXScale(startPos);
+    console.warn(this._refXScale.domain(), this._refXScale.range())
+    console.warn("pixelPos", pixelPos)
+    const cursor = new PIXI.Graphics();
+    cursor.lineStyle(1, "black", 1);
+    cursor.moveTo(0, 0);
+    cursor.lineTo(0, this.#element.clientHeight);
+    this.pMain.addChild(cursor);
+    const cursorPos = signal<number>(543428951);
+
+    function moveCursor(event: MouseEvent) {
+      // Convert event.offsetX to genomic position
+      const baseScale = scaleLinear().range([0, this.#element.clientWidth]);
+      const newScale = baseScale.domain(this.xDomain.value);
+      const genomicPos = newScale.invert(event.offsetX);
+      cursorPos.value = genomicPos;
+      cursor.position.x = event.offsetX;
+    }
+
+    this.#element.addEventListener("mousemove", moveCursor.bind(this));
+
+    effect(() => {
+      const baseScale = scaleLinear().range([0, this.#element.clientWidth]);
+      const newScale = baseScale.domain(this.xDomain.value);
+      cursor.position.x = newScale(cursorPos.value);
+    });
   }
 
   #addZoom(): void {

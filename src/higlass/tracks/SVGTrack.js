@@ -3,7 +3,7 @@ import { uuid } from "./utils";
 
 import Track from "./Track";
 
-class SVGTrack extends Track {
+export class SVGTrack extends Track {
   constructor(context, options) {
     super(context, options);
     const { svgElement } = context;

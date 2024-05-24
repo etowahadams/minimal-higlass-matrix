@@ -19,9 +19,9 @@ type CircularBrushData = {
   cursor: string;
 };
 
-type CircularBrushTrackContext = ViewportTrackerHorizontalContext;
+export type CircularBrushTrackContext = ViewportTrackerHorizontalContext;
 
-interface CircularBrushTrackOptions {
+export interface CircularBrushTrackOptions {
   innerRadius: number;
   outerRadius: number;
   startAngle: number;

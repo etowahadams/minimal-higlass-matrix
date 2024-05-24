@@ -1,1 +1,2 @@
-export { default as DummyTrack } from './dummy-track';
+export { DummyTrackClass } from './dummy-track';
+export type {DummyTrackOptions} from './dummy-track';

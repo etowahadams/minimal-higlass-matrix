@@ -576,17 +576,18 @@ declare module '@higlass/tracks' {
         clipUid: string;
         clipRect: d3Selection.Selection<d3Selection.Datum, d3Selection.PElement, d3Selection.PDatum>;
         /* Constructor */
-        constructor(context: Context<unknown, Options>, options: Options);
+        constructor(context: SVGTrackContext, options: Options);
     }
 
-    interface ViewportTrackerHorizontalContext {
-        // Used in Track
+    interface TrackContext {
         id: string;
-        pubSub: PubSub;
+        pubSub?: PubSub;
         getTheme: () => unknown;
-        // Used in SVGTrack
+    }
+    interface SVGTrackContext extends TrackContext {
         svgElement: SVGElement;
-        // Used in ViewportTrackerHorizontal
+    }
+    interface ViewportTrackerHorizontalContext extends SVGTrackContext {
         registerViewportChanged: (uid: string, callback: (viewportXScale: ScaleLinear<number, number>, viewportYScale: ScaleLinear<number, number>) => void) => void;
         removeViewportChanged: (uid: string) => void;
         setDomainsCallback: (xDomain: [number, number], yDomain: [number, number]) => void;

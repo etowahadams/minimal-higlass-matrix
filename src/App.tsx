@@ -9,6 +9,7 @@ import { addCorces } from "./examples/corces/corces";
 // import { addScatterplots } from "./examples/coordinated-scatterplots";
 import { addViewEncoding } from "./examples/visual-encoding/visual-encoding";
 import { addDummyTrack } from "./examples/dummy";
+import { addTextTracks } from "./examples/text-tracks";
 
 function App() {
   const [fps, setFps] = useState(120);
@@ -27,6 +28,7 @@ function App() {
     addCorces(pixiManager);
     // addViewEncoding(pixiManager);
     // addDummyTrack(pixiManager);
+    // addTextTracks(pixiManager);
   }, []);
 
   return (

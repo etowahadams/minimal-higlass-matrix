@@ -4,6 +4,7 @@ import { PixiManager } from "../../pixi-manager";
 import { GoslingTrack } from "../../gosling";
 import { AxisTrack } from "../../axis";
 import { ViewportTrackerHorizontalTrack } from "../../viewport-tracker-horizontal";
+import { TextTrack } from "../../text";
 // Import DataFetchers
 import {
   BigWigDataFetcher,
@@ -13,6 +14,8 @@ import { DataFetcher } from "@higlass/datafetchers";
 import { fakePubSub } from "../../higlass/tracks/utils";
 // Import Track specs
 import {
+  titleOptions,
+  subtitleOptions,
   gene_annotation,
   bigwigTracks,
   placTracks,
@@ -21,14 +24,26 @@ import {
 } from "./corces-tracks";
 
 export function addCorces(pixiManager: PixiManager) {
+
+  const top = 10;
+  const left = 10;
   // Set up the domain signals
   const ideogramDomain = signal<[number, number]>([491149952, 689445510]);
   const view1Domain = signal<[number, number]>([543317951, 544039951]);
   const cursorPosition = signal<number>(0);
 
+
+  // Add title and subtitle
+  const titlePos = { x: left, y: top, width: 400, height: 24 };
+  new TextTrack(titleOptions, pixiManager.makeContainer(titlePos));
+  const subtitlePos = { x: left, y: titlePos.y + titlePos.height, width: 400, height: 22 };
+  new TextTrack(subtitleOptions, pixiManager.makeContainer(subtitlePos));
+
+  
+
   // Ideogram track
   const CsvDataFetcher = new CsvDataFetcherClass(ideogram.spec.data);
-  const pos0 = { x: 10, y: 10, width: 400, height: 55 };
+  const pos0 = { x: left, y: subtitlePos.y + subtitlePos.height + 10, width: 400, height: 55 };
   new GoslingTrack(
     ideogram,
     ideogramDomain,
@@ -36,16 +51,6 @@ export function addCorces(pixiManager: PixiManager) {
     pixiManager.makeContainer(pos0),
     cursorPosition
   );
-
-  // Axis track
-  const posAxis = {
-    x: 10,
-    y: pos0.y + pos0.height,
-    width: 400,
-    height: 30,
-  };
-  new AxisTrack(axisTrack, view1Domain, pixiManager.makeContainer(posAxis));
-
   // Brush track
   const options = {
     projectionFillColor: "red",
@@ -61,12 +66,22 @@ export function addCorces(pixiManager: PixiManager) {
     pixiManager.makeContainer(pos0).overlayDiv
   );
 
+
+
+  // Axis track
+  const posAxis = {
+    x: left,
+    y: pos0.y + pos0.height,
+    width: 400,
+    height: 30,
+  };
+  new AxisTrack(axisTrack, view1Domain, pixiManager.makeContainer(posAxis));
   // BigWig tracks
   bigwigTracks.forEach((bigwigTrackOptions, i) => {
     const dataFetcher = new BigWigDataFetcher(bigwigTrackOptions.spec.data);
     // dataFetcher.config.cache = true; // turn on caching
     const pos1 = {
-      x: 10,
+      x: left,
       y: posAxis.y + posAxis.height + i * 40,
       width: 400,
       height: 40,
@@ -90,7 +105,7 @@ export function addCorces(pixiManager: PixiManager) {
     fakePubSub
   );
   const pos2 = {
-    x: 10,
+    x: left,
     y: posAxis.y + posAxis.height + bigwigTracks.length * 40,
     width: 400,
     height: 110,
@@ -113,7 +128,7 @@ export function addCorces(pixiManager: PixiManager) {
     fakePubSub
   );
   const pos3 = {
-    x: 10,
+    x: left,
     y: pos2.y + pos2.height,
     width: 400,
     height: 90,

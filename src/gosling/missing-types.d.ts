@@ -267,7 +267,7 @@ declare module '@higlass/tracks' {
         prevOptions: string;
         flipText?: boolean; // Property never assigned https://github.com/higlass/higlass/blob/develop/app/scripts/PixiTrack.js
         /* Constructor */
-        constructor(context: Context<unknown, Options>, options: Options);
+        constructor(context: PixiTrackContext, options: Options);
         /* Methods */
         setMask(position: [number, number], dimensions: [number, number]): void;
         getForeground(): void;
@@ -577,6 +577,10 @@ declare module '@higlass/tracks' {
         clipRect: d3Selection.Selection<d3Selection.Datum, d3Selection.PElement, d3Selection.PDatum>;
         /* Constructor */
         constructor(context: SVGTrackContext, options: Options);
+    }
+    
+    interface PixiTrackContext extends TrackContext {
+        scene: PIXI.Container;
     }
 
     interface TrackContext {

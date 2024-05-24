@@ -1,3 +1,24 @@
+export const titleOptions = {
+  backgroundColor: "transparent",
+  textColor: "black",
+  fontSize: 18,
+  fontWeight: "bold",
+  fontFamily: "Arial",
+  offsetY: 0,
+  align: "left",
+  text: "Single-cell Epigenomic Analysis",
+};
+
+export const subtitleOptions = {
+  backgroundColor: "transparent",
+  textColor: "gray",
+  fontSize: 16,
+  fontWeight: "normal",
+  fontFamily: "Arial",
+  offsetY: 0,
+  align: "left",
+  text: "Corces et al. 2020",
+};
 // bigwig datafetcher
 // bar mark
 // orange color

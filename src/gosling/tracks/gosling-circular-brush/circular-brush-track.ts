@@ -19,9 +19,9 @@ type CircularBrushData = {
   cursor: string;
 };
 
-type BrushTrackContext = ViewportTrackerHorizontalContext;
+type CircularBrushTrackContext = ViewportTrackerHorizontalContext;
 
-interface BrushTrackOptions {
+interface CircularBrushTrackOptions {
   innerRadius: number;
   outerRadius: number;
   startAngle: number;
@@ -33,7 +33,7 @@ interface BrushTrackOptions {
   projectionStrokeOpacity: number;
   strokeWidth: number;
 }
-const defaultOptions: BrushTrackOptions = {
+const defaultOptions: CircularBrushTrackOptions = {
   innerRadius: 100,
   outerRadius: 200,
   startAngle: 0,
@@ -45,7 +45,7 @@ const defaultOptions: BrushTrackOptions = {
   projectionStrokeOpacity: 0.7,
   strokeWidth: 1,
 };
-export class BrushTrackClass extends SVGTrack<BrushTrackOptions> {
+export class CircularBrushTrackClass extends SVGTrack<CircularBrushTrackOptions> {
   circularBrushData: CircularBrushData[];
   prevExtent: [number, number];
   uid: string;
@@ -62,7 +62,7 @@ export class BrushTrackClass extends SVGTrack<BrushTrackOptions> {
   gBrush: Selection<SVGGElement, unknown, null, undefined>;
   startEvent: any;
 
-  constructor(context: BrushTrackContext, options: BrushTrackOptions) {
+  constructor(context: CircularBrushTrackContext, options: CircularBrushTrackOptions) {
     super(context, options); // context, options
     const {
       registerViewportChanged,

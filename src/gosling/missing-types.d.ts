@@ -718,6 +718,7 @@ declare module '@higlass/utils' {
             scale: ScaleContinuousNumeric<number, number>
         ): [zoomLevel: number, x: number][];
     };
+    export function uuid(): string;
 }
 
 declare module '@higlass/datafetcher' {

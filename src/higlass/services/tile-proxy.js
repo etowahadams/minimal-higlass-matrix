@@ -1,9 +1,8 @@
 import { range } from 'd3-array';
-import { uuid } from '../tracks/utils';
 
-import { workerGetTiles, workerSetPix } from '../datafetcher/worker';
+import { workerGetTiles, workerSetPix } from './worker';
 
-import { trimTrailingSlash as tts, timeout as sleep } from '@higlass/utils';
+import { trimTrailingSlash as tts, timeout as sleep, uuid } from '@higlass/utils';
 
 // Config
 import { TILE_FETCH_DEBOUNCE } from '../configs';

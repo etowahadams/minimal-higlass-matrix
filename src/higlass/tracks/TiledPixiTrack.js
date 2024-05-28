@@ -5,7 +5,8 @@ import { DataFetcher } from "@higlass/datafetcher";
 import { PixiTrack } from "@higlass/tracks";
 
 // Utils
-import { throttleAndDebounce, parseChromsizesRows, uuid } from "./utils";
+import { throttleAndDebounce, parseChromsizesRows } from "./utils";
+import { uuid } from '@higlass/utils'
 import backgroundTaskScheduler from "./background-task-scheduler";
 
 // Configs

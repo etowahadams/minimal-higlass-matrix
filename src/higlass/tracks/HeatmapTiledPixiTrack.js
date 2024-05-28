@@ -14,11 +14,11 @@ import {
   objVals,
   showMousePosition,
   valueToColor,
-  uuid,
 } from "./utils";
 
 import TiledPixiTrack, { getValueScale } from "./TiledPixiTrack";
 import AxisPixi from "./AxisPixi";
+import { uuid } from "@higlass/utils";
 
 // Services
 import { default as tileProxy } from "../services/tile-proxy";

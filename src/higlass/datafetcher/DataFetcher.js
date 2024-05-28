@@ -6,9 +6,9 @@ import {
   maxNonZero,
   DenseDataExtrema1D,
   DenseDataExtrema2D,
+  uuid,
 } from "@higlass/utils";
 
-import { uuid } from "../tracks/utils";
 // Services
 import { tileProxy } from "@higlass/services";
 

@@ -1,5 +1,5 @@
 import { brushX } from 'd3-brush';
-import {uuid} from './utils';
+import {uuid} from '@higlass/utils';
 
 import SVGTrack from './SVGTrack';
 

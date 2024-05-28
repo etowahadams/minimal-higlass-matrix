@@ -20,11 +20,6 @@ export const isWithin = (x, y, minX, maxX, minY, maxY, is1d = false) =>
     ? (x >= minX && x <= maxX) || (y >= minY && y <= maxY)
     : x >= minX && x <= maxX && y >= minY && y <= maxY;
 
-
-export function uuid() {
-  return Math.random().toString(36).substring(2, 10);
-}
-
 /**
  * Convert a regular color value (e.g. 'red', '#FF0000', 'rgb(255,0,0)') to a
  * hex value which is legible by PIXI

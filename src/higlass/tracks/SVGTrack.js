@@ -1,5 +1,5 @@
 import { select } from "d3-selection";
-import { uuid } from "./utils";
+import { uuid } from "@higlass/utils";
 
 import Track from "./Track";
 

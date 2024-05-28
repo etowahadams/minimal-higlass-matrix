@@ -2,7 +2,8 @@ import { formatPrefix, precisionPrefix } from 'd3-format';
 
 import Track from './Track';
 
-import { colorToHex, uuid } from './utils';
+import { colorToHex } from './utils';
+import { uuid } from '@higlass/utils';
 
 // Configs
 import { GLOBALS } from '../configs';

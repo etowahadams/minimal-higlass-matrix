@@ -9,7 +9,7 @@ import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
 import { Cursor } from "../../interactors/Cursor";
 import { PanZoom } from "../../interactors/PanZoom";
 // Import DataFetchers
-import { DataFetcher } from "@higlass/datafetchers";
+import { DataFetcher } from "@higlass/datafetcher";
 import { fakePubSub } from "@higlass/utils";
 // Import Track specs
 import {

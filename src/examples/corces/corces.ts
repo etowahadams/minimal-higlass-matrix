@@ -13,7 +13,7 @@ import {
   BigWigDataFetcher,
   CsvDataFetcherClass,
 } from "@gosling-lang/datafetchers";
-import { DataFetcher } from "@higlass/datafetchers";
+import { DataFetcher } from "@higlass/datafetcher";
 import { fakePubSub } from "@higlass/utils";
 // Import Track specs
 import {

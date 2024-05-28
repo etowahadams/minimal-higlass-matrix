@@ -1,7 +1,7 @@
 import { range } from 'd3-array';
 import { uuid } from '../tracks/utils';
 
-import { workerGetTiles, workerSetPix } from '../datafetchers/worker';
+import { workerGetTiles, workerSetPix } from '../datafetcher/worker';
 
 import { trimTrailingSlash as tts, timeout as sleep } from '@higlass/utils';
 

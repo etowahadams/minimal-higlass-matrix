@@ -7,7 +7,7 @@ import * as PIXI from "pixi.js";
 import { fakePubSub } from "@higlass/utils";
 import { scaleLinear } from "d3-scale";
 import { type Signal } from "@preact/signals-core";
-import { DataFetcher } from "@higlass/datafetchers";
+import { DataFetcher } from "@higlass/datafetcher";
 
 import { Interactor } from "../interactors/types";
 import { Plot, Attribute } from "./types";

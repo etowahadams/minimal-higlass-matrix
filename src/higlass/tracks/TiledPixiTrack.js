@@ -1,8 +1,8 @@
 import { scaleLinear, scaleLog, scaleQuantile } from "d3-scale";
 import { median, range, ticks } from "d3-array";
 
-import DataFetcher from "../datafetchers/DataFetcher";
-import PixiTrack from "./PixiTrack";
+import { DataFetcher } from "@higlass/datafetcher";
+import { PixiTrack } from "@higlass/tracks";
 
 // Utils
 import { throttleAndDebounce, parseChromsizesRows, uuid } from "./utils";

@@ -124,6 +124,7 @@ declare module '@higlass/tracks' {
     import type * as d3Selection from 'd3-selection';
     import type { TilesetInfo, ColorRGBA } from '@higlass/services';
     import type { ChromInfo } from '@higlass/utils';
+    import type { DataFetcher } from '@higlass/datafetcher';
 
     export type Scale = d3.ScaleContinuousNumeric<number, number>;
 
@@ -234,11 +235,6 @@ declare module '@higlass/tracks' {
     }
 
     type DataConfig = Record<string, any>;
-    export interface DataFetcher<Tile> {
-        tilesetInfo(finished: (info: TilesetInfo) => void): void;
-        fetchTilesDebounced(receivedTiles: (tiles: Record<string, Tile>) => void, tileIds: string[]): void;
-        track?: any;
-    }
 
     type TilePosition1D = [zoom: number, x: number];
     type TilePosition2D = [zoom: number, x: number, y: number];
@@ -722,4 +718,12 @@ declare module '@higlass/utils' {
             scale: ScaleContinuousNumeric<number, number>
         ): [zoomLevel: number, x: number][];
     };
+}
+
+declare module '@higlass/datafetcher' {
+    export class DataFetcher<Tile> {
+        tilesetInfo(finished: (info: TilesetInfo) => void): void;
+        fetchTilesDebounced(receivedTiles: (tiles: Record<string, Tile>) => void, tileIds: string[]): void;
+        track?: any;
+    }
 }

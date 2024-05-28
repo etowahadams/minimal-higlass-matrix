@@ -7,7 +7,7 @@ import { signal, effect, type Signal } from "@preact/signals-core";
 // temporary fix https://stackoverflow.com/a/54020925
 // @types/d3-select does not have the right version of d3-transition
 import { transition as d3Transition } from "d3-transition";
-import { Data, zoomWheelBehavior} from "./utils";
+import { Data, zoomWheelBehavior} from "../utils";
 select.prototype.transition = d3Transition;
 
 const generateCircleTexture = (

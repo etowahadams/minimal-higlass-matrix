@@ -1,5 +1,5 @@
 import { type PixiManager } from "../pixi-manager";
-import { Scatterplot } from "../scatterplot";
+import { Scatterplot } from "../plots/scatterplot";
 import { signal } from "@preact/signals-core";
 import { generateRandomData } from "../utils";
 

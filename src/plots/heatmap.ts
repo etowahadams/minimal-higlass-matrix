@@ -4,7 +4,7 @@ import {
   TiledPixiTrackOptions,
 } from "../higlass/types";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "../higlass/tracks/utils";
+import { fakePubSub } from "@higlass/utils";
 import { scaleLinear } from "d3-scale";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";

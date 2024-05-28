@@ -20,13 +20,6 @@ export const isWithin = (x, y, minX, maxX, minY, maxY, is1d = false) =>
     ? (x >= minX && x <= maxX) || (y >= minY && y <= maxY)
     : x >= minX && x <= maxX && y >= minY && y <= maxY;
 
-export const fakePubSub = {
-  __fake__: true,
-  publish: () => {},
-  subscribe: () => ({ event: "fake", handler: () => {} }),
-  unsubscribe: () => {},
-  clear: () => {},
-};
 
 export function uuid() {
   return Math.random().toString(36).substring(2, 10);

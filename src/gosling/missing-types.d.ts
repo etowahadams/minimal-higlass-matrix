@@ -670,6 +670,14 @@ declare module '@higlass/utils' {
     import type { ScaleContinuousNumeric } from 'd3-scale';
     import type { TilesetInfo } from '@higlass/services';
 
+    export const fakePubSub = {
+        __fake__: true,
+        publish: () => {},
+        subscribe: () => ({ event: "fake", handler: () => {} }),
+        unsubscribe: () => {},
+        clear: () => {},
+    };
+
     export type ChromInfo<Name extends string = string> = {
         cumPositions: { id?: number; pos: number; chr: string }[];
         chrPositions: Record<Name, { pos: number }>;

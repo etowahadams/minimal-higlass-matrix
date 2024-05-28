@@ -66,7 +66,6 @@ import { tileProxy } from "@higlass/services";
 import { TiledPixiTrack } from "@higlass/tracks";
 import { select, Selection } from "d3-selection";
 import { format } from "d3-format";
-import { showMousePosition } from "../../../higlass/tracks/utils";
 import { calculate1DVisibleTiles } from "./utils";
 
 // Set `true` to print in what order each function is called
@@ -97,7 +96,6 @@ export interface GoslingTrackOptions {
   siblingIds: string[];
   spec: SingleTrack | OverlaidTrack;
   theme: CompleteThemeDeep;
-  showMousePosition?: boolean;
 }
 
 export type GoslingTrackContext = Context<Tile, GoslingTrackOptions>;
@@ -264,16 +262,6 @@ export class GoslingTrackClass extends TiledPixiTrack<
     });
     this.pMask.on("mouseout", this.#onMouseOut.bind(this));
     this.flipText = this.options.spec.orientation === "vertical";
-
-    // Draw the mouse position
-    // See https://github.com/higlass/higlass/blob/38f0c4415f0595c3b9d685a754d6661dc9612f7c/app/scripts/utils/show-mouse-position.js#L28
-    if (this.options?.showMousePosition && !this.hideMousePosition) {
-      this.hideMousePosition = showMousePosition(
-        this,
-        Is2DTrack(this.getResolvedTracks()[0]),
-        isShowGlobalMousePosition()
-      );
-    }
 
     // We do not use HiGlass' trackNotFoundText
     this.pLabel.removeChild(this.trackNotFoundText);

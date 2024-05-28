@@ -4,7 +4,7 @@ import {
   GoslingTrackContext,
 } from "@gosling-lang/tracks/gosling-track";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "../higlass/tracks/utils";
+import { fakePubSub } from "@higlass/utils";
 import { scaleLinear } from "d3-scale";
 import { type Signal } from "@preact/signals-core";
 import { DataFetcher } from "@higlass/datafetchers";
@@ -67,7 +67,7 @@ export class GoslingTrack extends GoslingTrackClass implements Plot {
     this.zoomed(refXScale, refYScale);
     this.refScalesChanged(refXScale, refYScale);
   }
-  
+
   addInteractor(interactor: Interactor) {
     interactor.init(this);
     return this; // For chaining
@@ -82,4 +82,3 @@ export class GoslingTrack extends GoslingTrackClass implements Plot {
     }
   }
 }
-

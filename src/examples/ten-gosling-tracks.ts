@@ -2,7 +2,7 @@ import { PixiManager } from "../pixi-manager";
 import { GoslingTrack } from "../plots/gosling";
 import { signal } from "@preact/signals-core";
 import { DataFetcher } from "@higlass/datafetchers";
-import { fakePubSub } from "../higlass/tracks/utils";
+import { fakePubSub } from "@higlass/utils";
 
 import { Cursor } from "../interactors/Cursor";
 import { PanZoom } from "../interactors/PanZoom";

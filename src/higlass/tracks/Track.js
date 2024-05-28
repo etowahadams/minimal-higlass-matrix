@@ -1,6 +1,7 @@
 import { scaleLinear } from 'd3-scale';
 // Services
-import { isWithin, fakePubSub } from './utils';
+import { fakePubSub } from '@higlass/utils';
+import { isWithin} from './utils'
 
 /**
  * @typedef TrackContext

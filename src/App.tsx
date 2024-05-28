@@ -26,8 +26,8 @@ function App() {
     // addHeatmap(pixiManager);
     // addGoslingTracks(pixiManager);
     // addScatterplots(pixiManager);
-    // addCorces(pixiManager);
-    addViewEncoding(pixiManager);
+    addCorces(pixiManager);
+    // addViewEncoding(pixiManager);
     // addDummyTrack(pixiManager);
     // addTextTracks(pixiManager);
   }, []);

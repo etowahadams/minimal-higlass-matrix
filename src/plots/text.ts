@@ -4,7 +4,7 @@ import type {
   TextTrackContext,
 } from "@gosling-lang/tracks/text-track";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "../higlass/tracks/utils";
+import { fakePubSub } from "@higlass/utils";
 
 export class TextTrack extends TextTrackClass {
   constructor(

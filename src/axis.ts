@@ -4,7 +4,7 @@ import {
   type AxisTrackOptions,
 } from "@gosling-lang/tracks/gosling-genomic-axis";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "./higlass/tracks/utils";
+import { fakePubSub } from "@higlass/utils";
 import { scaleLinear } from "d3-scale";
 import { ZoomTransform } from "d3-zoom";
 

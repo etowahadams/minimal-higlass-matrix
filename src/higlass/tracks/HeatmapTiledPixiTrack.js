@@ -21,7 +21,7 @@ import AxisPixi from "./AxisPixi";
 import { uuid } from "@higlass/utils";
 
 // Services
-import { default as tileProxy } from "../services/tile-proxy";
+import { tileProxy } from "@higlass/services";
 
 import {
   GLOBALS,

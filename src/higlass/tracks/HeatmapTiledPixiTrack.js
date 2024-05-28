@@ -337,7 +337,6 @@ export class HeatmapTiledPixiTrack extends TiledPixiTrack {
 
   rerender(options, force) {
     super.rerender(options, force);
-    console.warn("rerender called");
 
     // We need to update the value scale prior to updating the colorbar
     this.updateValueScale();
@@ -554,13 +553,11 @@ export class HeatmapTiledPixiTrack extends TiledPixiTrack {
 
   setPosition(newPosition) {
     super.setPosition(newPosition);
-    console.warn("setPosition called");
     this.drawColorbar();
   }
 
   setDimensions(newDimensions) {
     super.setDimensions(newDimensions);
-    console.warn("setDimensions called");
     this.drawColorbar();
   }
 
@@ -1214,7 +1211,6 @@ export class HeatmapTiledPixiTrack extends TiledPixiTrack {
   renderTile(tile) {
     const [scaleType] = this.updateValueScale();
     const pseudocount = 0;
-    console.warn("renderTile called");
 
     this.renderingTiles.add(tile.tileId);
 
@@ -1269,11 +1265,6 @@ export class HeatmapTiledPixiTrack extends TiledPixiTrack {
   refScalesChanged(refXScale, refYScale) {
     super.refScalesChanged(refXScale, refYScale);
 
-    console.warn(
-      "refScalesChanged called",
-      refXScale.domain(),
-      refXScale.range()
-    );
     objVals(this.fetchedTiles)
       .filter((tile) => tile.sprite)
       .forEach((tile) =>

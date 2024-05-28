@@ -1,10 +1,13 @@
 import { signal } from "@preact/signals-core";
 import { PixiManager } from "../../pixi-manager";
 // Import Tracks
-import { GoslingTrack } from "../../gosling";
+import { GoslingTrack } from "../../plots/gosling";
 import { AxisTrack } from "../../axis";
-import { ViewportTrackerHorizontalTrack } from "../../viewport-tracker-horizontal";
-import { TextTrack } from "../../text";
+import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
+import { TextTrack } from "../../plots/text";
+// Import interactors
+import { Cursor } from "../../interactors/Cursor";
+import { PanZoom } from "../../interactors/PanZoom";
 // Import DataFetchers
 import {
   BigWigDataFetcher,
@@ -24,33 +27,43 @@ import {
 } from "./corces-tracks";
 
 export function addCorces(pixiManager: PixiManager) {
-
   const top = 10;
   const left = 10;
   // Set up the domain signals
   const ideogramDomain = signal<[number, number]>([491149952, 689445510]);
+  const ideogramPanZoom = new PanZoom(ideogramDomain);
   const view1Domain = signal<[number, number]>([543317951, 544039951]);
+  const view1PanZoom = new PanZoom(view1Domain);
   const cursorPosition = signal<number>(0);
-
+  const cursor = new Cursor(cursorPosition);
 
   // Add title and subtitle
   const titlePos = { x: left, y: top, width: 400, height: 24 };
   new TextTrack(titleOptions, pixiManager.makeContainer(titlePos));
-  const subtitlePos = { x: left, y: titlePos.y + titlePos.height, width: 400, height: 22 };
+  const subtitlePos = {
+    x: left,
+    y: titlePos.y + titlePos.height,
+    width: 400,
+    height: 22,
+  };
   new TextTrack(subtitleOptions, pixiManager.makeContainer(subtitlePos));
-
-  
 
   // Ideogram track
   const CsvDataFetcher = new CsvDataFetcherClass(ideogram.spec.data);
-  const pos0 = { x: left, y: subtitlePos.y + subtitlePos.height + 10, width: 400, height: 55 };
+  const pos0 = {
+    x: left,
+    y: subtitlePos.y + subtitlePos.height + 10,
+    width: 400,
+    height: 55,
+  };
   new GoslingTrack(
     ideogram,
     ideogramDomain,
     CsvDataFetcher,
-    pixiManager.makeContainer(pos0),
-    cursorPosition
-  );
+    pixiManager.makeContainer(pos0)
+  )
+    .addInteractor(ideogramPanZoom)
+    .addInteractor(cursor);
   // Brush track
   const options = {
     projectionFillColor: "red",
@@ -65,8 +78,6 @@ export function addCorces(pixiManager: PixiManager) {
     view1Domain,
     pixiManager.makeContainer(pos0).overlayDiv
   );
-
-
 
   // Axis track
   const posAxis = {
@@ -91,8 +102,7 @@ export function addCorces(pixiManager: PixiManager) {
       view1Domain,
       dataFetcher,
       pixiManager.makeContainer(pos1),
-      cursorPosition
-    );
+    ).addInteractor(view1PanZoom).addInteractor(cursor);
   });
 
   // Gene annotation track
@@ -115,8 +125,7 @@ export function addCorces(pixiManager: PixiManager) {
     view1Domain,
     geneDataFetcher,
     pixiManager.makeContainer(pos2),
-    cursorPosition
-  );
+  ).addInteractor(view1PanZoom).addInteractor(cursor);
 
   // PLAC-seq track
   const platDatafetcher = new DataFetcher(
@@ -139,7 +148,6 @@ export function addCorces(pixiManager: PixiManager) {
       view1Domain,
       platDatafetcher,
       pixiManager.makeContainer(pos3),
-      cursorPosition
-    );
+    ).addInteractor(view1PanZoom).addInteractor(cursor);
   });
 }

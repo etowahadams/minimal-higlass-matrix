@@ -1,22 +1,22 @@
 import {
-  ViewportTrackerHorizontal,
-  type ViewportTrackerHorizontalContext,
-  type ViewportTrackerHorizontalOptions,
-} from "@higlass/tracks";
+  CircularBrushTrackClass,
+  type CircularBrushTrackOptions,
+  type CircularBrushTrackContext,
+} from "@gosling-lang/tracks/gosling-circular-brush";
 import { scaleLinear } from "d3-scale";
 import { ZoomTransform, type D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
 import { type Signal, effect } from "@preact/signals-core";
-import { zoomWheelBehavior } from './utils'
+import { zoomWheelBehavior } from '../utils'
 
-export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<ViewportTrackerHorizontalOptions> {
+export class CircularBrushTrack extends CircularBrushTrackClass {
   xDomain: Signal<number[]>;
   xBrushDomain: Signal<number[]>;
   zoomStartScale = scaleLinear(); // This is the scale that we use to store the domain when the user starts zooming
   #element: HTMLElement; // This is the div that we're going to apply the zoom behavior to
 
   constructor(
-    options: ViewportTrackerHorizontalOptions,
+    options: CircularBrushTrackOptions,
     xDomain: Signal<[number, number]>,
     xBrushDomain: Signal<[number, number]>,
     overlayDiv: HTMLElement
@@ -34,7 +34,7 @@ export class ViewportTrackerHorizontalTrack extends ViewportTrackerHorizontal<Vi
     overlayDiv.appendChild(svgElement);
 
     // Setup the context object
-    const context: ViewportTrackerHorizontalContext = {
+    const context: CircularBrushTrackContext = {
       id: "test",
       svgElement: svgElement,
       getTheme: () => "light",

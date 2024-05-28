@@ -1,5 +1,5 @@
 import { PixiManager } from "../pixi-manager";
-import { DummyTrack } from "../dummy";
+import { DummyTrack } from "../plots/dummy";
 
 export function addDummyTrack(pixiManager: PixiManager) {
   new DummyTrack(

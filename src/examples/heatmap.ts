@@ -1,5 +1,5 @@
 import { type PixiManager } from "../pixi-manager";
-import { HeatmapTrack } from "../heatmap";
+import { HeatmapTrack } from "../plots/heatmap";
 
 export function addHeatmap(pixiManager: PixiManager) {
     // Let's add a heatmap

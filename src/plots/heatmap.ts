@@ -2,14 +2,14 @@ import { HeatmapTiledPixiTrack } from "@higlass/tracks";
 import {
   TiledPixiTrackContext,
   TiledPixiTrackOptions,
-} from "./higlass/types";
+} from "../higlass/types";
 import * as PIXI from "pixi.js";
-import { fakePubSub } from "./higlass/tracks/utils";
+import { fakePubSub } from "../higlass/tracks/utils";
 import { scaleLinear } from "d3-scale";
 
 import { D3ZoomEvent, zoom } from "d3-zoom";
 import { select } from "d3-selection";
-import { zoomWheelBehavior } from './utils'
+import { zoomWheelBehavior } from '../utils'
 
 type HeatmapTrackContext = TiledPixiTrackContext & {
   svgElement: HTMLElement;

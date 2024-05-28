@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
 import { PixiManager } from "../pixi-manager";
-import { TextTrack } from "../text";
+import { TextTrack } from "../plots/text";
 
 export const titleOptions = {
   backgroundColor: "transparent",

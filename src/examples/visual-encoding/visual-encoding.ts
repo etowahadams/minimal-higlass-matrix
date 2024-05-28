@@ -1,15 +1,14 @@
 import { signal } from "@preact/signals-core";
 import { PixiManager } from "../../pixi-manager";
 // Import Tracks
-import { GoslingTrack } from "../../gosling";
+import { GoslingTrack } from "../../plots/gosling";
 import { AxisTrack } from "../../axis";
-import { CircularBrushTrack } from "../../circular-brush";
-import { ViewportTrackerHorizontalTrack } from "../../viewport-tracker-horizontal";
+import { CircularBrushTrack } from "../../plots/brush-circular";
+import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
+// Import interactors
+import { Cursor } from "../../interactors/Cursor";
+import { PanZoom } from "../../interactors/PanZoom";
 // Import DataFetchers
-import {
-  BigWigDataFetcher,
-  CsvDataFetcherClass,
-} from "@gosling-lang/datafetchers";
 import { DataFetcher } from "@higlass/datafetchers";
 import { fakePubSub } from "../../higlass/tracks/utils";
 // Import Track specs
@@ -30,6 +29,11 @@ export function addViewEncoding(pixiManager: PixiManager) {
   const overviewDomain = signal<[number, number]>([0, 248956422]);
   const detailedDomain = signal<[number, number]>([160000000, 200000000]);
   const cursorPosition = signal<number>(0);
+  // Create the interactors
+  const circularZoomPan = new PanZoom(circularDomain);
+  const overviewZoomPan = new PanZoom(overviewDomain);
+  const detailedZoomPan = new PanZoom(detailedDomain);
+  const cursor = new Cursor(cursorPosition);
 
   // All tracks use this datafetcher
   const dataFetcher = new DataFetcher(
@@ -48,7 +52,7 @@ export function addViewEncoding(pixiManager: PixiManager) {
     circularDomain,
     dataFetcher,
     pixiManager.makeContainer(pos0)
-  );
+  ).addInteractor(circularZoomPan);
   new AxisTrack(
     circularAxisTrackOptions,
     circularDomain,
@@ -84,8 +88,7 @@ export function addViewEncoding(pixiManager: PixiManager) {
     overviewDomain,
     dataFetcher,
     pixiManager.makeContainer(posLinear),
-    cursorPosition
-  );
+  ).addInteractor(overviewZoomPan).addInteractor(cursor);
   new ViewportTrackerHorizontalTrack(
     linearBrushTrackOptions,
     overviewDomain,
@@ -118,8 +121,7 @@ export function addViewEncoding(pixiManager: PixiManager) {
     detailedDomain,
     dataFetcher,
     pixiManager.makeContainer(posBottom),
-    cursorPosition
-  );
+  ).addInteractor(detailedZoomPan).addInteractor(cursor);
 
   //   // Axis track
   //   const posAxis = {

@@ -5,8 +5,9 @@ import { PixiManager } from "./pixi-manager";
 import { FpsPanel } from "./FpsPanel";
 
 import { addCorces } from "./examples/corces/corces";
-// import { addGoslingTracks } from "./examples/ten-gosling-tracks";
+import { addGoslingTracks } from "./examples/ten-gosling-tracks";
 // import { addScatterplots } from "./examples/coordinated-scatterplots";
+import { addHeatmap } from "./examples/heatmap";
 import { addViewEncoding } from "./examples/visual-encoding/visual-encoding";
 import { addDummyTrack } from "./examples/dummy";
 import { addTextTracks } from "./examples/text-tracks";
@@ -25,8 +26,8 @@ function App() {
     // addHeatmap(pixiManager);
     // addGoslingTracks(pixiManager);
     // addScatterplots(pixiManager);
-    addCorces(pixiManager);
-    // addViewEncoding(pixiManager);
+    // addCorces(pixiManager);
+    addViewEncoding(pixiManager);
     // addDummyTrack(pixiManager);
     // addTextTracks(pixiManager);
   }, []);

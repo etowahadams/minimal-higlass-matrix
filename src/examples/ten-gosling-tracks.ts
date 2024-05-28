@@ -1,33 +1,13 @@
 import { PixiManager } from "../pixi-manager";
-import { GoslingTrack } from "../gosling";
+import { GoslingTrack } from "../plots/gosling";
 import { signal } from "@preact/signals-core";
 import { DataFetcher } from "@higlass/datafetchers";
 import { fakePubSub } from "../higlass/tracks/utils";
 
+import { Cursor } from "../interactors/Cursor";
+import { PanZoom } from "../interactors/PanZoom";
+
 export function addGoslingTracks(pixiManager: PixiManager) {
-  const trackColors = [
-    "#E79F00",
-    "#F29B67",
-    "#565C8B",
-    "#77C0FA",
-    "#9B46E5",
-    "#D73636",
-    "#E38ADC",
-    "#20102F",
-    "#BB57C9",
-    "green",
-  ];
-
-  function changeMarkColor(gosOption: any, color?: string) {
-    if (!color) {
-      color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    }
-    const newGosOption = structuredClone(gosOption);
-    newGosOption.spec.color = { value: color };
-    return newGosOption;
-  }
-
-  const xDomGenomic = signal([0, 3088269832]);
   const dataconfig = {
     server: "https://resgen.io/api/v1",
     tilesetUid: "UvVPeLHuRDiYA3qwFlm7xQ",
@@ -35,15 +15,44 @@ export function addGoslingTracks(pixiManager: PixiManager) {
   };
   const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
+  const xDomGenomic = signal<[number, number]>([0, 3088269832]);
+  const cursorPos = signal<number>(0);
+
+  const panzoom = new PanZoom(xDomGenomic);
+  const cursor = new Cursor(cursorPos);
+
   trackColors.forEach((color, i) => {
-    const pos = { x: 10, y: 400 + i * 60, width: 800, height: 50 };
-    new GoslingTrack(
+    const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
+    const gosTrack = new GoslingTrack(
       changeMarkColor(gosOptions, color),
       xDomGenomic,
       dataFetcher,
       pixiManager.makeContainer(pos)
     );
+    gosTrack.addInteractor(panzoom).addInteractor(cursor);
   });
+}
+
+const trackColors = [
+  "#E79F00",
+  "#F29B67",
+  "#565C8B",
+  "#77C0FA",
+  "#9B46E5",
+  "#D73636",
+  "#E38ADC",
+  "#20102F",
+  "#BB57C9",
+  "green",
+];
+
+function changeMarkColor(gosOption: any, color?: string) {
+  if (!color) {
+    color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
+  const newGosOption = structuredClone(gosOption);
+  newGosOption.spec.color = { value: color };
+  return newGosOption;
 }
 
 const gosOptions = {

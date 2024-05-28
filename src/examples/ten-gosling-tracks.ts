@@ -15,20 +15,24 @@ export function addGoslingTracks(pixiManager: PixiManager) {
   };
   const dataFetcher = new DataFetcher(dataconfig, fakePubSub);
 
+  // Set up the signals for the domain and cursor 
   const xDomGenomic = signal<[number, number]>([0, 3088269832]);
   const cursorPos = signal<number>(0);
 
+  // Associate the signals with interaction behaviors
   const panzoom = new PanZoom(xDomGenomic);
   const cursor = new Cursor(cursorPos);
 
   trackColors.forEach((color, i) => {
     const pos = { x: 10, y: 10 + i * 60, width: 800, height: 50 };
+    // Create the Gosling track
     const gosTrack = new GoslingTrack(
       changeMarkColor(gosOptions, color),
       xDomGenomic,
       dataFetcher,
       pixiManager.makeContainer(pos)
     );
+    // Add the interaction behaviors to the track
     gosTrack.addInteractor(panzoom).addInteractor(cursor);
   });
 }

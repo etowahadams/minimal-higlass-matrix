@@ -4,7 +4,7 @@ import { PixiManager } from "../../pixi-manager";
 import { GoslingTrack } from "../../plots/gosling";
 import { AxisTrack } from "../../axis";
 import { CircularBrushTrack } from "../../plots/brush-circular";
-import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
+import { BrushLinearTrack } from "../../plots/brush-linear";
 // Import interactors
 import { cursor } from "../../interactors/cursor";
 import { panZoom } from "../../interactors/panZoom";
@@ -84,12 +84,11 @@ export function addViewEncoding(pixiManager: PixiManager) {
   )
     .addInteractor((plot) => panZoom(plot, overviewDomain))
     .addInteractor((plot) => cursor(plot, cursorPosition));
-  new ViewportTrackerHorizontalTrack(
+  new BrushLinearTrack(
     linearBrushTrackOptions,
-    overviewDomain,
     detailedDomain,
     pixiManager.makeContainer(posLinear).overlayDiv
-  );
+  ).addInteractor((plot) => panZoom(plot, overviewDomain));
 
   // Bottom track
   const posBottomAxis = {
@@ -118,95 +117,4 @@ export function addViewEncoding(pixiManager: PixiManager) {
   )
     .addInteractor((plot) => panZoom(plot, detailedDomain))
     .addInteractor((plot) => cursor(plot, cursorPosition));
-
-  //   // Axis track
-  //   const posAxis = {
-  //     x: 10,
-  //     y: pos0.y + pos0.height,
-  //     width: 400,
-  //     height: 30,
-  //   };
-  //   new AxisTrack(axisTrack, view1Domain, pixiManager.makeContainer(posAxis));
-
-  //   // Brush track
-  //   const options = {
-  //     projectionFillColor: "red",
-  //     projectionStrokeColor: "red",
-  //     projectionFillOpacity: 0.3,
-  //     projectionStrokeOpacity: 0.3,
-  //     strokeWidth: 1,
-  //   };
-  //   new ViewportTrackerHorizontalTrack(
-  //     options,
-  //     ideogramDomain,
-  //     view1Domain,
-  //     pixiManager.makeContainer(pos0).overlayDiv
-  //   );
-
-  //   // BigWig tracks
-  //   bigwigTracks.forEach((bigwigTrackOptions, i) => {
-  //     const dataFetcher = new BigWigDataFetcher(bigwigTrackOptions.spec.data);
-  //     // dataFetcher.config.cache = true; // turn on caching
-  //     const pos1 = {
-  //       x: 10,
-  //       y: posAxis.y + posAxis.height + i * 40,
-  //       width: 400,
-  //       height: 40,
-  //     };
-  //     new GoslingTrack(
-  //       bigwigTrackOptions,
-  //       view1Domain,
-  //       dataFetcher,
-  //       pixiManager.makeContainer(pos1),
-  //       cursorPosition
-  //     );
-  //   });
-
-  //   // Gene annotation track
-  //   const geneDataFetcher = new DataFetcher(
-  //     {
-  //       server: "https://server.gosling-lang.org/api/v1",
-  //       tilesetUid: "gene-annotation",
-  //       cacheTiles: true, // New option
-  //     },
-  //     fakePubSub
-  //   );
-  //   const pos2 = {
-  //     x: 10,
-  //     y: posAxis.y + posAxis.height + bigwigTracks.length * 40,
-  //     width: 400,
-  //     height: 110,
-  //   };
-  //   new GoslingTrack(
-  //     gene_annotation,
-  //     view1Domain,
-  //     geneDataFetcher,
-  //     pixiManager.makeContainer(pos2),
-  //     cursorPosition
-  //   );
-
-  //   // PLAC-seq track
-  //   const platDatafetcher = new DataFetcher(
-  //     {
-  //       server: "https://server.gosling-lang.org/api/v1",
-  //       tilesetUid: "neuron-plac-seq-bedpe",
-  //       cacheTiles: true, // New option
-  //     },
-  //     fakePubSub
-  //   );
-  //   const pos3 = {
-  //     x: 10,
-  //     y: pos2.y + pos2.height,
-  //     width: 400,
-  //     height: 90,
-  //   };
-  //   placTracks.forEach((placTrackOptions) => {
-  //     new GoslingTrack(
-  //       placTrackOptions,
-  //       view1Domain,
-  //       platDatafetcher,
-  //       pixiManager.makeContainer(pos3),
-  //       cursorPosition
-  //     );
-  //   });
 }

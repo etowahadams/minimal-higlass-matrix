@@ -3,11 +3,12 @@ import { PixiManager } from "../../pixi-manager";
 // Import Tracks
 import { GoslingTrack } from "../../plots/gosling";
 import { AxisTrack } from "../../axis";
-import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
+import { BrushLinearTrack } from "../../plots/brush-linear";
 import { TextTrack } from "../../plots/text";
 // Import interactors
 import { cursor } from "../../interactors/cursor";
 import { panZoom } from "../../interactors/panZoom";
+
 // Import DataFetchers
 import {
   BigWigDataFetcher,
@@ -53,11 +54,7 @@ export function addCorces(pixiManager: PixiManager) {
     width: 400,
     height: 55,
   };
-  new GoslingTrack(
-    ideogram,
-    CsvDataFetcher,
-    pixiManager.makeContainer(pos0)
-  )
+  new GoslingTrack(ideogram, CsvDataFetcher, pixiManager.makeContainer(pos0))
     .addInteractor((plot) => panZoom(plot, ideogramDomain))
     .addInteractor((plot) => cursor(plot, cursorPosition));
   // Brush track
@@ -68,12 +65,11 @@ export function addCorces(pixiManager: PixiManager) {
     projectionStrokeOpacity: 0.3,
     strokeWidth: 1,
   };
-  new ViewportTrackerHorizontalTrack(
+  new BrushLinearTrack(
     options,
-    ideogramDomain,
     view1Domain,
     pixiManager.makeContainer(pos0).overlayDiv
-  );
+  ).addInteractor((plot) => panZoom(plot, ideogramDomain));
 
   // Axis track
   const posAxis = {

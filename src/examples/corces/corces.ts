@@ -6,8 +6,8 @@ import { AxisTrack } from "../../axis";
 import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
 import { TextTrack } from "../../plots/text";
 // Import interactors
-import { Cursor } from "../../interactors/Cursor";
-import { PanZoom } from "../../interactors/PanZoom";
+import { cursor } from "../../interactors/cursor";
+import { panZoom } from "../../interactors/panZoom";
 // Import DataFetchers
 import {
   BigWigDataFetcher,
@@ -31,11 +31,8 @@ export function addCorces(pixiManager: PixiManager) {
   const left = 10;
   // Set up the domain signals
   const ideogramDomain = signal<[number, number]>([491149952, 689445510]);
-  const ideogramPanZoom = new PanZoom(ideogramDomain);
   const view1Domain = signal<[number, number]>([543317951, 544039951]);
-  const view1PanZoom = new PanZoom(view1Domain);
   const cursorPosition = signal<number>(0);
-  const cursor = new Cursor(cursorPosition);
 
   // Add title and subtitle
   const titlePos = { x: left, y: top, width: 400, height: 24 };
@@ -58,12 +55,11 @@ export function addCorces(pixiManager: PixiManager) {
   };
   new GoslingTrack(
     ideogram,
-    ideogramDomain,
     CsvDataFetcher,
     pixiManager.makeContainer(pos0)
   )
-    .addInteractor(ideogramPanZoom)
-    .addInteractor(cursor);
+    .addInteractor((plot) => panZoom(plot, ideogramDomain))
+    .addInteractor((plot) => cursor(plot, cursorPosition));
   // Brush track
   const options = {
     projectionFillColor: "red",
@@ -99,10 +95,11 @@ export function addCorces(pixiManager: PixiManager) {
     };
     new GoslingTrack(
       bigwigTrackOptions,
-      view1Domain,
       dataFetcher,
-      pixiManager.makeContainer(pos1),
-    ).addInteractor(view1PanZoom).addInteractor(cursor);
+      pixiManager.makeContainer(pos1)
+    )
+      .addInteractor((plot) => panZoom(plot, view1Domain))
+      .addInteractor((plot) => cursor(plot, cursorPosition));
   });
 
   // Gene annotation track
@@ -122,10 +119,11 @@ export function addCorces(pixiManager: PixiManager) {
   };
   new GoslingTrack(
     gene_annotation,
-    view1Domain,
     geneDataFetcher,
-    pixiManager.makeContainer(pos2),
-  ).addInteractor(view1PanZoom).addInteractor(cursor);
+    pixiManager.makeContainer(pos2)
+  )
+    .addInteractor((plot) => panZoom(plot, view1Domain))
+    .addInteractor((plot) => cursor(plot, cursorPosition));
 
   // PLAC-seq track
   const platDatafetcher = new DataFetcher(
@@ -145,9 +143,10 @@ export function addCorces(pixiManager: PixiManager) {
   placTracks.forEach((placTrackOptions) => {
     new GoslingTrack(
       placTrackOptions,
-      view1Domain,
       platDatafetcher,
-      pixiManager.makeContainer(pos3),
-    ).addInteractor(view1PanZoom).addInteractor(cursor);
+      pixiManager.makeContainer(pos3)
+    )
+      .addInteractor((plot) => panZoom(plot, view1Domain))
+      .addInteractor((plot) => cursor(plot, cursorPosition));
   });
 }

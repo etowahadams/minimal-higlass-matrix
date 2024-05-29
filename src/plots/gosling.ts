@@ -9,22 +9,22 @@ import { scaleLinear } from "d3-scale";
 import { type Signal } from "@preact/signals-core";
 import { DataFetcher } from "@higlass/datafetcher";
 
-import { Interactor } from "../interactors/types";
-import { Plot, Attribute } from "./types";
+import { Plot } from "./types";
+import { signal } from "@preact/signals-core";
 
-export class GoslingTrack extends GoslingTrackClass implements Plot {
-  xDomain: Signal<[number, number]>;
+export class GoslingTrack extends GoslingTrackClass implements Plot{
+  xDomain: Signal<[number, number]>; // This has to be a signal because it will potentially be updated by interactors
   zoomStartScale = scaleLinear();
   domOverlay: HTMLElement;
 
   constructor(
     options: GoslingTrackOptions,
-    xDomain: Signal<[number, number]>,
     dataFetcher: DataFetcher,
     containers: {
       pixiContainer: PIXI.Container;
       overlayDiv: HTMLElement;
-    }
+    },
+    xDomain = signal<[number, number]>([0, 3088269832]),
   ) {
     const { pixiContainer, overlayDiv } = containers;
     const height = overlayDiv.clientHeight;
@@ -68,17 +68,8 @@ export class GoslingTrack extends GoslingTrackClass implements Plot {
     this.refScalesChanged(refXScale, refYScale);
   }
 
-  addInteractor(interactor: Interactor) {
-    interactor.init(this);
+  addInteractor(interactor: (plot: GoslingTrack) => void) {
+    interactor(this);
     return this; // For chaining
-  }
-
-  setAttribute(name: Attribute, value: unknown) {
-    if (name === Attribute.xDomain) {
-      const newScale = this._refXScale.domain(value);
-      this.zoomed(newScale, this._refYScale);
-    } else {
-      console.warn(`Attribute ${name} is not supported`);
-    }
   }
 }

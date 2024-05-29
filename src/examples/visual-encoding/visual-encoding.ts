@@ -6,8 +6,8 @@ import { AxisTrack } from "../../axis";
 import { CircularBrushTrack } from "../../plots/brush-circular";
 import { ViewportTrackerHorizontalTrack } from "../../plots/brush-linear";
 // Import interactors
-import { Cursor } from "../../interactors/Cursor";
-import { PanZoom } from "../../interactors/PanZoom";
+import { cursor } from "../../interactors/cursor";
+import { panZoom } from "../../interactors/panZoom";
 // Import DataFetchers
 import { DataFetcher } from "@higlass/datafetcher";
 import { fakePubSub } from "@higlass/utils";
@@ -29,11 +29,6 @@ export function addViewEncoding(pixiManager: PixiManager) {
   const overviewDomain = signal<[number, number]>([0, 248956422]);
   const detailedDomain = signal<[number, number]>([160000000, 200000000]);
   const cursorPosition = signal<number>(0);
-  // Create the interactors
-  const circularZoomPan = new PanZoom(circularDomain);
-  const overviewZoomPan = new PanZoom(overviewDomain);
-  const detailedZoomPan = new PanZoom(detailedDomain);
-  const cursor = new Cursor(cursorPosition);
 
   // All tracks use this datafetcher
   const dataFetcher = new DataFetcher(
@@ -49,10 +44,9 @@ export function addViewEncoding(pixiManager: PixiManager) {
   const pos0 = { x: 10, y: 10, width: 250, height: 250 };
   new GoslingTrack(
     circularTrackOptions,
-    circularDomain,
     dataFetcher,
     pixiManager.makeContainer(pos0)
-  ).addInteractor(circularZoomPan);
+  ).addInteractor((plot) => panZoom(plot, circularDomain));
   new AxisTrack(
     circularAxisTrackOptions,
     circularDomain,
@@ -85,10 +79,11 @@ export function addViewEncoding(pixiManager: PixiManager) {
   };
   new GoslingTrack(
     linearTrackOptions,
-    overviewDomain,
     dataFetcher,
-    pixiManager.makeContainer(posLinear),
-  ).addInteractor(overviewZoomPan).addInteractor(cursor);
+    pixiManager.makeContainer(posLinear)
+  )
+    .addInteractor((plot) => panZoom(plot, overviewDomain))
+    .addInteractor((plot) => cursor(plot, cursorPosition));
   new ViewportTrackerHorizontalTrack(
     linearBrushTrackOptions,
     overviewDomain,
@@ -118,10 +113,11 @@ export function addViewEncoding(pixiManager: PixiManager) {
   };
   new GoslingTrack(
     bottomTrackOptions,
-    detailedDomain,
     dataFetcher,
-    pixiManager.makeContainer(posBottom),
-  ).addInteractor(detailedZoomPan).addInteractor(cursor);
+    pixiManager.makeContainer(posBottom)
+  )
+    .addInteractor((plot) => panZoom(plot, detailedDomain))
+    .addInteractor((plot) => cursor(plot, cursorPosition));
 
   //   // Axis track
   //   const posAxis = {
